@@ -4,12 +4,41 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+    .timer-container {
+        background-color: rgba(128, 128, 0, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-left: 4px solid var(--golden);
+    }
+    
+    .timer-label {
+        font-weight: bold;
+        color: var(--olive-dark);
+    }
+    
+    .timer-value {
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    
+    .timestamp {
+        color: var(--olive);
+    }
+    
+    .elapsed {
+        color: var(--golden);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10">
-        <div class="card" id="scan-status-container" data-scan-id="{{ scan_id }}" data-scan-status="{{ scan.status }}">
+        <div class="card" id="scan-status-container" data-scan-id="{{ scan_id }}" data-scan-status="{{ scan.status }}" data-start-time="{{ scan.start_time }}">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
@@ -67,6 +96,24 @@
                             </h5>
                         </div>
                     </div>
+                    
+                    <!-- Timer display -->
+                    <div class="timer-container mt-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <span class="timer-label">Current Time:</span>
+                                    <span id="current-timestamp" class="timer-value timestamp"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <span class="timer-label">Elapsed Time:</span>
+                                    <span id="elapsed-time" class="timer-value elapsed">00:00:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 {% if scan.status == 'pending' %}
@@ -89,6 +136,17 @@
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" id="scan-progress">
                                     Scanning...
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manual redirect link (hidden by default) -->
+                        <div class="text-center mt-3" id="manual-results-link" style="display: none;">
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-exclamation-triangle me-2"></i>Taking longer than expected?</h6>
+                                <p class="mb-2">If the scan has completed but you haven't been redirected:</p>
+                                <a href="{{ url_for('results', scan_id=scan_id) }}" class="btn btn-warning">
+                                    <i class="bi bi-file-earmark-text me-2"></i>View Results Manually
+                                </a>
                             </div>
                         </div>
                         
@@ -166,4 +224,77 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    // Timer functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize timers
+        updateCurrentTime();
+        const timerInterval = setInterval(updateTimers, 1000);
+        
+        // Update current time
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('current-timestamp').textContent = formatDateTime(now);
+        }
+        
+        // Update all timers
+        function updateTimers() {
+            // Update current timestamp
+            updateCurrentTime();
+            
+            // Update elapsed time if scan is running
+            const scanStatus = document.getElementById('scan-status-container').dataset.scanStatus;
+            if (scanStatus === 'running' || scanStatus === 'pending') {
+                updateElapsedTime();
+            }
+        }
+        
+        // Update elapsed time since scan start
+        function updateElapsedTime() {
+            const startTimeStr = document.getElementById('scan-status-container').dataset.startTime;
+            if (!startTimeStr) return;
+            
+            // Parse the start time
+            const startTimeParts = startTimeStr.split(' ');
+            const dateParts = startTimeParts[0].split('-');
+            const timeParts = startTimeParts[1].split(':');
+            
+            const startTime = new Date(
+                parseInt(dateParts[0]), 
+                parseInt(dateParts[1]) - 1, 
+                parseInt(dateParts[2]),
+                parseInt(timeParts[0]),
+                parseInt(timeParts[1]),
+                parseInt(timeParts[2])
+            );
+            
+            const now = new Date();
+            const elapsedSeconds = Math.floor((now - startTime) / 1000);
+            
+            document.getElementById('elapsed-time').textContent = formatElapsedTime(elapsedSeconds);
+        }
+        
+        // Format date and time
+        function formatDateTime(date) {
+            return date.toLocaleString('en-US', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+        
+        // Format elapsed time as HH:MM:SS
+        function formatElapsedTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+    });
+</script>
 {% endblock %}

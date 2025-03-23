@@ -39,6 +39,16 @@ function initScanStatus() {
             startScan(scanId);
         });
     }
+    
+    // Show manual results link after 15 seconds for running scans
+    if (scanStatus === 'running') {
+        setTimeout(() => {
+            const manualLink = document.getElementById('manual-results-link');
+            if (manualLink) {
+                manualLink.style.display = 'block';
+            }
+        }, 15000);
+    }
 }
 
 /**
@@ -111,7 +121,7 @@ function startScan(scanId) {
         } else if (data.status === 'completed') {
             // Scan already completed, redirect to results
             console.log('Scan already completed, redirecting to results');
-            window.location.href = data.redirect;
+            redirectToResults(data.redirect, scanId);
         } else {
             // Error starting scan
             console.error('Error starting scan:', data.message);
@@ -161,6 +171,33 @@ function stopPolling() {
 }
 
 /**
+ * Safely redirect to results page
+ * @param {string} redirectUrl - URL to redirect to
+ * @param {string} scanId - Scan ID (used as fallback)
+ */
+function redirectToResults(redirectUrl, scanId) {
+    console.log('Attempting to redirect to results...');
+    
+    // Add a delay to ensure everything is saved
+    setTimeout(() => {
+        try {
+            if (redirectUrl) {
+                console.log(`Redirecting to: ${redirectUrl}`);
+                window.location.replace(redirectUrl);
+            } else {
+                // Fallback
+                console.log('No redirect URL provided, using fallback');
+                window.location.replace(`/results/${scanId}`);
+            }
+        } catch (e) {
+            console.error('Redirect error:', e);
+            // Last resort - reload the page
+            window.location.reload();
+        }
+    }, 1500);
+}
+
+/**
  * Poll for scan status updates
  * @param {string} scanId - The ID of the scan to poll for
  */
@@ -189,15 +226,17 @@ function pollScanStatus(scanId) {
                 console.log('Scan completed, stopping polling and redirecting');
                 stopPolling();
                 
-                // Add a small delay before redirect to ensure the session is properly updated
-                setTimeout(() => {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        console.error('No redirect URL provided for completed scan');
-                        window.location.reload(); // Fallback: just reload the page
-                    }
-                }, 1000);
+                // Show completed status before redirect
+                const progressBar = document.getElementById('scan-progress');
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                    progressBar.textContent = '100% Complete';
+                    progressBar.classList.remove('progress-bar-animated');
+                    progressBar.classList.add('bg-success');
+                }
+                
+                // Redirect to results page
+                redirectToResults(data.redirect, scanId);
             } else if (data.status === 'error') {
                 // Display error
                 console.error('Scan error:', data.message);
