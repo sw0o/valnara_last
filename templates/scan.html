@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Status - Valnara Security Scanner{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Scan Status</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Target: <span class="text-primary">{{ scan.url }}</span></h5>
+                    <p>
+                        <strong>Scan Type:</strong> 
+                        {% if scan.scan_type == 1 %}
+                            Spider Scan
+                        {% elif scan.scan_type == 2 %}
+                            Ajax Spider Scan
+                        {% elif scan.scan_type == 3 %}
+                            Active Scan
+                        {% elif scan.scan_type == 4 %}
+                            Passive Scan
+                        {% elif scan.scan_type == 5 %}
+                            DOM XSS Scan
+                        {% endif %}
+                    </p>
+                    <p><strong>Scan Depth:</strong> {{ scan.scan_depth }}</p>
+                    <p><strong>Start Time:</strong> {{ scan.start_time }}</p>
+                    {% if scan.status == 'completed' and scan.end_time %}
+                        <p><strong>End Time:</strong> {{ scan.end_time }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Status: 
+                        {% if scan.status == 'pending' %}
+                            <span class="badge bg-secondary">Pending</span>
+                        {% elif scan.status == 'running' %}
+                            <span class="badge bg-primary">Running</span>
+                        {% elif scan.status == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elif scan.status == 'failed' %}
+                            <span class="badge bg-danger">Failed</span>
+                        {% endif %}
+                    </h5>
+                    
+                    {% if scan.status == 'pending' %}
+                        <div class="alert alert-info mt-3">
+                            <p>Your scan is ready to start. Click the button below to begin.</p>
+                            <form action="/start_scan/{{ scan_id }}" method="post">
+                                <button type="submit" class="btn btn-primary">Start Scan</button>
+                            </form>
+                        </div>
+                    {% elif scan.status == 'running' %}
+                        <div class="alert alert-primary mt-3">
+                            <p>Your scan is in progress. This page will refresh automatically every 5 seconds.</p>
+                            <div class="progress mt-3" style="height: 25px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;">Scanning...</div>
+                            </div>
+                        </div>
+                        <meta http-equiv="refresh" content="5">
+                    {% elif scan.status == 'completed' %}
+                        <div class="alert alert-success mt-3">
+                            <p>Scan completed successfully. <a href="{{ url_for('results', scan_id=scan_id) }}" class="alert-link">View Results</a></p>
+                        </div>
+                    {% elif scan.status == 'failed' %}
+                        <div class="alert alert-danger mt-3">
+                            <p>Scan failed: {{ scan.error }}</p>
+                            <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Start New Scan</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Valnara Security Scanner{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Security Scanner Configuration</h3>
+            </div>
+            <div class="card-body">
+                {% if not zap_available %}
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> ZAP API is not available. Please make sure ZAP is running at http://localhost:8080 before starting a scan.
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <strong>ZAP Status:</strong> Connected (version {{ zap_version }})
+                </div>
+                {% endif %}
+                
+                <form action="{{ url_for('scan') }}" method="post">
+                    <div class="mb-3">
+                        <label for="url" class="form-label">Target URL or IP Address*</label>
+                        <input type="text" class="form-control" id="url" name="url" placeholder="e.g., https://example.com or 192.168.1.1" required>
+                        <div class="form-text">Enter the URL or IP address of the target you want to scan.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scan_type" class="form-label">Scan Type</label>
+                        <select class="form-select" id="scan_type" name="scan_type">
+                            <option value="4" selected>Passive Scan (Default)</option>
+                            <option value="1">Spider Scan</option>
+                            <option value="2">Ajax Spider Scan</option>
+                            <option value="3">Active Scan</option>
+                            <option value="5">DOM XSS Scan</option>
+                        </select>
+                        <div class="form-text">
+                            <ul class="mt-2">
+                                <li><strong>Passive Scan:</strong> Non-intrusive, analyzes responses only</li>
+                                <li><strong>Spider Scan:</strong> Crawls the site to discover content</li>
+                                <li><strong>Ajax Spider:</strong> Crawls JavaScript-heavy applications</li>
+                                <li><strong>Active Scan:</strong> Performs vulnerability tests (intrusive)</li>
+                                <li><strong>DOM XSS Scan:</strong> Tests for DOM-based Cross-Site Scripting</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scan_depth" class="form-label">Scan Depth (5-20)</label>
+                        <input type="number" class="form-control" id="scan_depth" name="scan_depth" min="5" max="20" value="5">
+                        <div class="form-text">Higher values will scan deeper into the site structure but take longer.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" {% if not zap_available %}disabled{% endif %}>Start Scan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

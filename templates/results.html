@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Results - Valnara Security Scanner{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">Scan Results: {{ scan.url }}</h3>
+            </div>
+            <div class="card-body">
+                <h5>Scan Information</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Target:</strong> {{ scan.url }}</p>
+                        <p><strong>Scan Type:</strong> 
+                            {% if scan.scan_type == 1 %}
+                                Spider Scan
+                            {% elif scan.scan_type == 2 %}
+                                Ajax Spider Scan
+                            {% elif scan.scan_type == 3 %}
+                                Active Scan
+                            {% elif scan.scan_type == 4 %}
+                                Passive Scan
+                            {% elif scan.scan_type == 5 %}
+                                DOM XSS Scan
+                            {% endif %}
+                        </p>
+                        <p><strong>Scan Depth:</strong> {{ scan.scan_depth }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> <span class="badge bg-success">Completed</span></p>
+                        <p><strong>Start Time:</strong> {{ scan.start_time }}</p>
+                        <p><strong>End Time:</strong> {{ scan.end_time }}</p>
+                    </div>
+                </div>
+                
+                <h5>Vulnerability Summary</h5>
+                {% if results and results.summary %}
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center p-3 border-danger">
+                                <h3 class="text-danger">{{ results.summary.High }}</h3>
+                                <p>High Risk</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center p-3 border-warning">
+                                <h3 class="text-warning">{{ results.summary.Medium }}</h3>
+                                <p>Medium Risk</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center p-3 border-info">
+                                <h3 class="text-info">{{ results.summary.Low }}</h3>
+                                <p>Low Risk</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center p-3 border-success">
+                                <h3 class="text-success">{{ results.summary.Informational }}</h3>
+                                <p>Informational</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if results and results.alerts %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Detected Vulnerabilities</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" id="vulnerabilitiesTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">All</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="high-tab" data-bs-toggle="tab" data-bs-target="#high" type="button" role="tab">High Risk</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="medium-tab" data-bs-toggle="tab" data-bs-target="#medium" type="button" role="tab">Medium Risk</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="low-tab" data-bs-toggle="tab" data-bs-target="#low" type="button" role="tab">Low Risk</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Informational</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="vulnerabilitiesTabContent">
+                        <div class="tab-pane fade show active" id="all" role="tabpanel">
+                            {% for alert in results.alerts %}
+                                <div class="mb-3 p-3 rounded
+                                    {% if alert.risk == 'High' %}
+                                        severity-high
+                                    {% elif alert.risk == 'Medium' %}
+                                        severity-medium
+                                    {% elif alert.risk == 'Low' %}
+                                        severity-low
+                                    {% else %}
+                                        severity-info
+                                    {% endif %}
+                                ">
+                                    <h5>{{ alert.name }} <span class="badge 
+                                        {% if alert.risk == 'High' %}
+                                            bg-danger
+                                        {% elif alert.risk == 'Medium' %}
+                                            bg-warning
+                                        {% elif alert.risk == 'Low' %}
+                                            bg-info
+                                        {% else %}
+                                            bg-success
+                                        {% endif %}
+                                    ">{{ alert.risk }}</span></h5>
+                                    <p><strong>URL:</strong> {{ alert.url }}</p>
+                                    {% if alert.solution %}
+                                        <div class="mt-2">
+                                            <h6>Remediation:</h6>
+                                            <p>{{ alert.solution }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="tab-pane fade" id="high" role="tabpanel">
+                            {% for alert in results.alerts if alert.risk == 'High' %}
+                                <div class="mb-3 p-3 rounded severity-high">
+                                    <h5>{{ alert.name }} <span class="badge bg-danger">High</span></h5>
+                                    <p><strong>URL:</strong> {{ alert.url }}</p>
+                                    {% if alert.solution %}
+                                        <div class="mt-2">
+                                            <h6>Remediation:</h6>
+                                            <p>{{ alert.solution }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    No high risk vulnerabilities found.
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="tab-pane fade" id="medium" role="tabpanel">
+                            {% for alert in results.alerts if alert.risk == 'Medium' %}
+                                <div class="mb-3 p-3 rounded severity-medium">
+                                    <h5>{{ alert.name }} <span class="badge bg-warning">Medium</span></h5>
+                                    <p><strong>URL:</strong> {{ alert.url }}</p>
+                                    {% if alert.solution %}
+                                        <div class="mt-2">
+                                            <h6>Remediation:</h6>
+                                            <p>{{ alert.solution }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    No medium risk vulnerabilities found.
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="tab-pane fade" id="low" role="tabpanel">
+                            {% for alert in results.alerts if alert.risk == 'Low' %}
+                                <div class="mb-3 p-3 rounded severity-low">
+                                    <h5>{{ alert.name }} <span class="badge bg-info">Low</span></h5>
+                                    <p><strong>URL:</strong> {{ alert.url }}</p>
+                                    {% if alert.solution %}
+                                        <div class="mt-2">
+                                            <h6>Remediation:</h6>
+                                            <p>{{ alert.solution }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    No low risk vulnerabilities found.
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="tab-pane fade" id="info" role="tabpanel">
+                            {% for alert in results.alerts if alert.risk == 'Informational' %}
+                                <div class="mb-3 p-3 rounded severity-info">
+                                    <h5>{{ alert.name }} <span class="badge bg-success">Informational</span></h5>
+                                    <p><strong>URL:</strong> {{ alert.url }}</p>
+                                    {% if alert.solution %}
+                                        <div class="mt-2">
+                                            <h6>Remediation:</h6>
+                                            <p>{{ alert.solution }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    No informational findings.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h5>No vulnerabilities found</h5>
+                <p>The scan did not detect any vulnerabilities in the target.</p>
+            </div>
+        {% endif %}
+        
+        <div class="text-center mb-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Start New Scan</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
