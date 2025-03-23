@@ -54,7 +54,9 @@
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary" {% if not zap_available %}disabled{% endif %}>Start Scan</button>
+                        <button type="submit" class="btn btn-primary btn-lg" {% if not zap_available %}disabled{% endif %}>
+                            <i class="bi bi-shield-check me-2"></i>Start Scan
+                        </button>
                     </div>
                 </form>
             </div>

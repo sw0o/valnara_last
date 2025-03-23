@@ -1,0 +1,245 @@
+/* Main CSS for Valnara Security Scanner */
+
+:root {
+    --golden: #D4AF37;
+    --olive: #808000;
+    --olive-light: #A9A957;
+    --olive-dark: #5A5A00;
+    --golden-light: #F1D78C;
+    --bg-gradient: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(128,128,0,0.1) 100%);
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--olive-light);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--olive);
+}
+
+/* Animation for the pulsing effect */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(128, 128, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(128, 128, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(128, 128, 0, 0);
+    }
+}
+
+.pulse-btn {
+    animation: pulse 2s infinite;
+}
+
+/* Vulnerability card hover effect */
+.vulnerability-card {
+    transition: all 0.3s ease;
+}
+
+.vulnerability-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading animations */
+.loading-spinner {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid rgba(128, 128, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--golden);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Custom tooltip */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Scan progress bar */
+.progress {
+    height: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1) inset;
+}
+
+.progress-bar {
+    background: linear-gradient(45deg, var(--olive) 0%, var(--golden) 100%);
+    background-size: 200% 200%;
+    animation: gradient-animation 2s ease infinite;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: none;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .card-header {
+    background-color: var(--olive);
+    color: white;
+    border-bottom: 2px solid var(--golden);
+    padding: 15px 20px;
+}
+
+.dashboard-card .card-body {
+    padding: 20px;
+}
+
+/* Real-time feed animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Badge styling */
+.badge.bg-high {
+    background-color: #dc3545;
+}
+
+.badge.bg-medium {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge.bg-low {
+    background-color: #17a2b8;
+}
+
+.badge.bg-info {
+    background-color: #198754;
+}
+
+/* Scanner animation */
+.scanner-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.scanner-line {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, transparent 0%, transparent 60%, rgba(212,175,55,0.08) 61%, rgba(128,128,0,0.08) 100%);
+    animation: scan 15s linear infinite;
+}
+
+@keyframes scan {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-header h3 {
+        font-size: 1.25rem;
+    }
+    
+    .vulnerability-card {
+        padding: 0.75rem !important;
+    }
+}

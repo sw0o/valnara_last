@@ -2,78 +2,168 @@
 
 {% block title %}Scan Status - Valnara Security Scanner{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10">
-        <div class="card">
+        <div class="card" id="scan-status-container" data-scan-id="{{ scan_id }}" data-scan-status="{{ scan.status }}">
             <div class="card-header">
-                <h3 class="mb-0">Scan Status</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Scan Status
+                    </h3>
+                    <span class="text-white">ID: {{ scan_id }}</span>
+                </div>
             </div>
             <div class="card-body">
                 <div class="mb-4">
-                    <h5>Target: <span class="text-primary">{{ scan.url }}</span></h5>
-                    <p>
-                        <strong>Scan Type:</strong> 
-                        {% if scan.scan_type == 1 %}
-                            Spider Scan
-                        {% elif scan.scan_type == 2 %}
-                            Ajax Spider Scan
-                        {% elif scan.scan_type == 3 %}
-                            Active Scan
-                        {% elif scan.scan_type == 4 %}
-                            Passive Scan
-                        {% elif scan.scan_type == 5 %}
-                            DOM XSS Scan
-                        {% endif %}
-                    </p>
-                    <p><strong>Scan Depth:</strong> {{ scan.scan_depth }}</p>
-                    <p><strong>Start Time:</strong> {{ scan.start_time }}</p>
-                    {% if scan.status == 'completed' and scan.end_time %}
-                        <p><strong>End Time:</strong> {{ scan.end_time }}</p>
-                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Target: <span class="text-primary">{{ scan.url }}</span></h5>
+                            <p>
+                                <strong>Scan Type:</strong> 
+                                {% if scan.scan_type == 1 %}
+                                    <span class="badge bg-info">Spider Scan</span>
+                                {% elif scan.scan_type == 2 %}
+                                    <span class="badge bg-info">Ajax Spider Scan</span>
+                                {% elif scan.scan_type == 3 %}
+                                    <span class="badge bg-warning">Active Scan</span>
+                                {% elif scan.scan_type == 4 %}
+                                    <span class="badge bg-success">Passive Scan</span>
+                                {% elif scan.scan_type == 5 %}
+                                    <span class="badge bg-danger">DOM XSS Scan</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Scan Depth:</strong> {{ scan.scan_depth }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Start Time:</strong> {{ scan.start_time }}</p>
+                            {% if scan.status == 'completed' and scan.end_time %}
+                                <p><strong>End Time:</strong> {{ scan.end_time }}</p>
+                                <p><strong>Duration:</strong> 
+                                    {% if scan.results and scan.results.scan_info %}
+                                        {% set duration = scan.results.scan_info.get(scan.scan_type|string, {}).get('duration_formatted', 'N/A') %}
+                                        {{ duration }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                            
+                            <h5 class="mt-3">Status: 
+                                {% if scan.status == 'pending' %}
+                                    <span class="badge bg-secondary">Pending</span>
+                                {% elif scan.status == 'running' %}
+                                    <span class="badge bg-primary pulse">Running</span>
+                                {% elif scan.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif scan.status == 'failed' %}
+                                    <span class="badge bg-danger">Failed</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="mb-4">
-                    <h5>Status: 
-                        {% if scan.status == 'pending' %}
-                            <span class="badge bg-secondary">Pending</span>
-                        {% elif scan.status == 'running' %}
-                            <span class="badge bg-primary">Running</span>
-                        {% elif scan.status == 'completed' %}
-                            <span class="badge bg-success">Completed</span>
-                        {% elif scan.status == 'failed' %}
-                            <span class="badge bg-danger">Failed</span>
-                        {% endif %}
-                    </h5>
-                    
-                    {% if scan.status == 'pending' %}
-                        <div class="alert alert-info mt-3">
-                            <p>Your scan is ready to start. Click the button below to begin.</p>
-                            <form action="/start_scan/{{ scan_id }}" method="post">
-                                <button type="submit" class="btn btn-primary">Start Scan</button>
-                            </form>
-                        </div>
-                    {% elif scan.status == 'running' %}
+                {% if scan.status == 'pending' %}
+                    <div class="alert alert-info mt-3">
+                        <h5><i class="bi bi-info-circle me-2"></i>Ready to Start</h5>
+                        <p>Your scan is ready to start. Click the button below to begin the security assessment.</p>
+                        <form action="/start_scan/{{ scan_id }}" method="post" id="start-scan-form">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-play-fill me-2"></i>Start Scan
+                            </button>
+                        </form>
+                    </div>
+                {% elif scan.status == 'running' %}
+                    <div id="real-time-dashboard">
                         <div class="alert alert-primary mt-3">
-                            <p>Your scan is in progress. This page will refresh automatically every 5 seconds.</p>
+                            <h5><i class="bi bi-arrow-repeat me-2"></i>Scan in Progress</h5>
+                            <p>Your security scan is currently running. This page automatically updates every 3 seconds with the latest findings.</p>
+                            
                             <div class="progress mt-3" style="height: 25px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;">Scanning...</div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" id="scan-progress">
+                                    Scanning...
+                                </div>
                             </div>
                         </div>
-                        <meta http-equiv="refresh" content="5">
-                    {% elif scan.status == 'completed' %}
-                        <div class="alert alert-success mt-3">
-                            <p>Scan completed successfully. <a href="{{ url_for('results', scan_id=scan_id) }}" class="alert-link">View Results</a></p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-8">
+                                <div class="card dashboard-card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"><i class="bi bi-activity me-2"></i>Live Vulnerability Feed</h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="list-group list-group-flush" id="vulnerabilities-feed" style="max-height: 400px; overflow-y: auto;">
+                                            <div class="list-group-item text-center py-5">
+                                                <div class="spinner-border text-olive mb-3" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mb-0">Waiting for scan results...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="card dashboard-card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Vulnerability Summary</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="vulnerabilityChart" height="200"></canvas>
+                                        <div class="mt-4">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-danger fw-bold">High Risk:</span>
+                                                <span id="high-count">0</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-warning fw-bold">Medium Risk:</span>
+                                                <span id="medium-count">0</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-info fw-bold">Low Risk:</span>
+                                                <span id="low-count">0</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-success fw-bold">Informational:</span>
+                                                <span id="info-count">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    {% elif scan.status == 'failed' %}
-                        <div class="alert alert-danger mt-3">
-                            <p>Scan failed: {{ scan.error }}</p>
-                            <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Start New Scan</a>
-                        </div>
-                    {% endif %}
-                </div>
+                    </div>
+                {% elif scan.status == 'completed' %}
+                    <div class="alert alert-success mt-3">
+                        <h5><i class="bi bi-check-circle me-2"></i>Scan Completed</h5>
+                        <p>Your security scan has completed successfully. View the detailed results below or click the button to view the full report.</p>
+                        <a href="{{ url_for('results', scan_id=scan_id) }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-file-earmark-text me-2"></i>View Full Report
+                        </a>
+                    </div>
+                {% elif scan.status == 'failed' %}
+                    <div class="alert alert-danger mt-3">
+                        <h5><i class="bi bi-exclamation-triangle me-2"></i>Scan Failed</h5>
+                        <p>Unfortunately, the security scan encountered an error: <strong>{{ scan.error }}</strong></p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">
+                            <i class="bi bi-arrow-repeat me-2"></i>Start New Scan
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock %}
