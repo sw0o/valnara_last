@@ -278,38 +278,79 @@ def api_scan_status(scan_id):
 
 @app.route('/results/<scan_id>')
 def results(scan_id):
-    """Display the scan results page"""
-    # Try to get scan from session first
-    scan_info = session.get('current_scan')
+    """Display the scan results page with better error handling and retries"""
+    max_retries = 3
+    retry_count = 0
     
-    # If not in session, try database
-    if not scan_info or scan_info['id'] != scan_id:
-        print(f"Scan {scan_id} not found in session, checking database")
-        scan_info = get_scan_by_id(scan_id)
-        if not scan_info:
-            flash('Scan not found', 'danger')
-            return redirect(url_for('index'))
-        
-        # Update session with database data
-        session['current_scan'] = scan_info
-        session.modified = True
+    while retry_count < max_retries:
+        try:
+            # Try to get scan from database first for reliability
+            scan_info = get_scan_by_id(scan_id)
+            
+            if not scan_info:
+                # If not in database, try session
+                scan_info = session.get('current_scan')
+                if not scan_info or scan_info['id'] != scan_id:
+                    flash('Scan not found', 'danger')
+                    return redirect(url_for('index'))
+            
+            # Check if the scan is actually completed
+            if scan_info['status'] != 'completed':
+                if retry_count == max_retries - 1:
+                    # On last retry, just show status page
+                    flash('Scan results not ready yet', 'warning')
+                    return redirect(url_for('scan_status', scan_id=scan_id))
+                else:
+                    # Wait a bit and retry
+                    import time
+                    time.sleep(1)
+                    retry_count += 1
+                    continue
+            
+            # Get results from the scan_info
+            results_data = scan_info.get('results')
+            
+            # Handle potential missing results
+            if not results_data:
+                if retry_count == max_retries - 1:
+                    flash('Scan completed but no results available', 'warning')
+                    return render_template('results.html', scan=scan_info, results={
+                        'alerts': [],
+                        'summary': {'High': 0, 'Medium': 0, 'Low': 0, 'Informational': 0}
+                    })
+                else:
+                    # Wait a bit and retry
+                    import time
+                    time.sleep(1)
+                    retry_count += 1
+                    continue
+                    
+            # Try different structures to handle possible nested data
+            if isinstance(results_data, dict) and 'results' in results_data:
+                extracted_results = results_data['results']
+            else:
+                extracted_results = results_data
+            
+            print(f"Rendering results with {len(extracted_results.get('alerts', []))} alerts")
+            
+            # Successfully got the results, render the template
+            return render_template('results.html', scan=scan_info, results=extracted_results)
+            
+        except Exception as e:
+            import traceback
+            print(f"Error rendering results: {str(e)}")
+            print(traceback.format_exc())
+            
+            # Only retry a limited number of times
+            if retry_count == max_retries - 1:
+                flash('Error displaying results: ' + str(e), 'danger')
+                return redirect(url_for('scan_status', scan_id=scan_id))
+            
+            retry_count += 1
     
-    if scan_info['status'] != 'completed':
-        flash('Scan is still in progress', 'warning')
-        return redirect(url_for('scan_status', scan_id=scan_id))
-    
-    # Get results from the scan_info
-    results_data = scan_info.get('results')
-    
-    # Try different structures to handle possible nested data
-    if results_data and isinstance(results_data, dict) and 'results' in results_data:
-        extracted_results = results_data['results']
-    else:
-        extracted_results = results_data
-    
-    print(f"Rendering results with {len(extracted_results.get('alerts', []))} alerts")
-    
-    return render_template('results.html', scan=scan_info, results=extracted_results)
+    # We should never reach here, but just in case
+    flash('Unexpected error loading results', 'danger')
+    return redirect(url_for('index')) 
 
 @app.route('/history')
 def history():
