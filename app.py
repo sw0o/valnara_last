@@ -8,6 +8,8 @@ from modules.url_validator import validate_url, check_site_availability, normali
 from modules.cms_detector import is_wordpress
 from modules.zap_scanner import run_zap_scan, test_zap_connection, get_scan_results
 from modules.wp_scanner import scan_wordpress_site  # Import WordPress scanner
+from flask import send_file
+from modules.report_generator import generate_scan_report
 
 # Import database modules
 from database import init_app
@@ -492,6 +494,25 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('error.html', error_code=500, error_message="Internal server error"), 500
-
+@app.route('/download_report/<scan_id>')
+def download_report(scan_id):
+    # Retrieve scan results from database
+    scan = get_scan_by_id(scan_id)
+    
+    if not scan:
+        flash('Scan report not found', 'danger')
+        return redirect(url_for('index'))
+    
+    try:
+        # Generate report
+        pdf_path = generate_scan_report(scan, scan_id)
+        
+        return send_file(pdf_path, as_attachment=True, 
+                         download_name=f"valnara_scan_report_{scan_id}.pdf")
+    
+    except Exception as e:
+        print(f"Report generation error: {e}")
+        flash('Error generating report', 'danger')
+        return redirect(url_for('results', scan_id=scan_id))
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5100)
+    app.run(debug=True, host='0.0.0.0', port=8000)

@@ -1,0 +1,195 @@
+{
+  "banner": {
+    "description": "WordPress Security Scanner by the WPScan Team",
+    "version": "3.8.28",
+    "authors": [
+      "@_WPScan_",
+      "@ethicalhack3r",
+      "@erwan_lr",
+      "@firefart"
+    ],
+    "sponsor": "Sponsored by Automattic - https://automattic.com/"
+  },
+  "start_time": 1743708651,
+  "start_memory": 59551744,
+  "target_url": "https://wordpress.org/",
+  "target_ip": "198.143.164.252",
+  "effective_url": "https://wordpress.org/",
+  "interesting_findings": [
+    {
+      "url": "https://wordpress.org/",
+      "to_s": "Headers",
+      "type": "headers",
+      "found_by": "Headers (Passive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+        "server: nginx",
+        "x-olaf: ⛄",
+        "alt-svc: h3=\":443\"; ma=86400",
+        "x-nc: HIT ord 2"
+      ]
+    },
+    {
+      "url": "https://wordpress.org/robots.txt",
+      "to_s": "robots.txt found: https://wordpress.org/robots.txt",
+      "type": "robots_txt",
+      "found_by": "Robots Txt (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+        "/wp-admin/",
+        "/wp-admin/admin-ajax.php",
+        "/wp-admin/load-scripts.php",
+        "/wp-admin/load-styles.php",
+        "/search",
+        "/?s=",
+        "/plugins/search/"
+      ]
+    },
+    {
+      "url": "https://wordpress.org/xmlrpc.php",
+      "to_s": "XML-RPC seems to be enabled: https://wordpress.org/xmlrpc.php",
+      "type": "xmlrpc",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "http://codex.wordpress.org/XML-RPC_Pingback_API"
+        ],
+        "metasploit": [
+          "auxiliary/scanner/http/wordpress_ghost_scanner",
+          "auxiliary/dos/http/wordpress_xmlrpc_dos",
+          "auxiliary/scanner/http/wordpress_xmlrpc_login",
+          "auxiliary/scanner/http/wordpress_pingback_access"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "https://wordpress.org/wp-content/mu-plugins/",
+      "to_s": "This site has 'Must Use Plugins': https://wordpress.org/wp-content/mu-plugins/",
+      "type": "mu_plugins",
+      "found_by": "URLs In Homepage (Passive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+        "Direct Access (Aggressive Detection)": {
+          "confidence": 80
+        }
+      },
+      "references": {
+        "url": [
+          "http://codex.wordpress.org/Must_Use_Plugins"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "https://wordpress.org/wp-cron.php",
+      "to_s": "The external WP-Cron seems to be enabled: https://wordpress.org/wp-cron.php",
+      "type": "wp_cron",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 60,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "https://www.iplocation.net/defend-wordpress-from-ddos",
+          "https://github.com/wpscanteam/wpscan/issues/1299"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    }
+  ],
+  "version": null,
+  "main_theme": {
+    "slug": "wporg-parent-2021",
+    "location": "https://wordpress.org/wp-content/themes/wporg-parent-2021/",
+    "latest_version": null,
+    "last_updated": null,
+    "outdated": false,
+    "readme_url": false,
+    "directory_listing": false,
+    "error_log_url": null,
+    "style_url": "https://wordpress.org/wp-content/themes/wporg-parent-2021/style.css",
+    "style_name": "WordPress.org Parent Theme, 2021 edition",
+    "style_uri": "https://github.com/WordPress/wporg-parent-2021",
+    "description": "The WordPress.org Parent Theme is a foundation for themes used on sites in the WordPress.org ecosystem.",
+    "author": "WordPress.org",
+    "author_uri": "https://wordpress.org/",
+    "template": null,
+    "license": "GNU General Public License v2 or later",
+    "license_uri": null,
+    "tags": null,
+    "text_domain": "wporg",
+    "found_by": "Urls In Homepage (Passive Detection)",
+    "confidence": 12,
+    "interesting_entries": [
+
+    ],
+    "confirmed_by": {
+      "Urls In 404 Page (Passive Detection)": {
+        "confidence": 6,
+        "interesting_entries": [
+
+        ]
+      }
+    },
+    "vulnerabilities": [
+
+    ],
+    "version": {
+      "number": "1.0.0-c1c8d0e",
+      "confidence": 80,
+      "found_by": "Style (Passive Detection)",
+      "interesting_entries": [
+        "https://wordpress.org/wp-content/themes/wporg-parent-2021/style.css, Match: 'Version: 1.0.0-c1c8d0e'"
+      ],
+      "confirmed_by": {
+
+      }
+    },
+    "parents": [
+
+    ]
+  },
+  "plugins": {
+
+  },
+  "themes": {
+
+  },
+  "vuln_api": {
+    "error": "No WPScan API Token given, as a result vulnerability data has not been output.\nYou can get a free API token with 25 daily requests by registering at https://wpscan.com/register"
+  },
+  "stop_time": 1743708818,
+  "elapsed": 166,
+  "requests_done": 1969,
+  "cached_requests": 14,
+  "data_sent": 596378,
+  "data_sent_humanised": "582.4 KB",
+  "data_received": 37502797,
+  "data_received_humanised": "35.765 MB",
+  "used_memory": 338653184,
+  "used_memory_humanised": "322.965 MB"
+}

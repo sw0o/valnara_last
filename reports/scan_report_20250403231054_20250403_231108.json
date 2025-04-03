@@ -1,0 +1,892 @@
+{
+    "id": "20250403231054",
+    "url": "http://testphp.vulnweb.com/",
+    "scan_type": 4,
+    "scan_depth": 5,
+    "is_wordpress": false,
+    "status": "completed",
+    "start_time": "2025-04-03 23:10:55",
+    "end_time": "2025-04-03 23:10:59",
+    "results": {
+        "scan_info": {
+            "passive": {
+                "duration": 0,
+                "duration_formatted": "0:00:00"
+            }
+        },
+        "results": {
+            "alerts": [
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/images/logo.gif",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/sitemap.xml",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/images/logo.gif",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Flash/add.swf",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/userinfo.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/privacy.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/privacy.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/robots.txt",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Flash/add.swf",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/network-attached-storage-dlink/1/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/userinfo.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/high",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/style.css",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/sitemap.xml",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/network-attached-storage-dlink/1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/robots.txt",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/privacy.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/high",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/network-attached-storage-dlink/1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/style.css",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/network-attached-storage-dlink/1/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/network-attached-storage-dlink/1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/cart.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/disclaimer.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/categories.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-1/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/color-printer/3/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/3.jpg",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-3.html",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-3/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/hpp/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/2.jpg",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/web-camera-a4tech/2/",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/3.jpg",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/1.jpg",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/color-printer/3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-3.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/hpp/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/2.jpg",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/web-camera-a4tech/2/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/images/1.jpg",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/color-printer/3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/hpp/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-3.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-1/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/web-camera-a4tech/2/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/color-printer/3/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/hpp/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-3.html",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-3/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-1/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/web-camera-a4tech/2/",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Modern Web Application",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "This is an informational alert and so no changes are required."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/hpp/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/color-printer/3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/BuyProduct-3/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-3.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/Details/web-camera-a4tech/2/",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Modern Web Application",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "This is an informational alert and so no changes are required."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "User Controllable HTML Element Attribute (Potential XSS)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Validate all input and sanitize output it before writing to any HTML attributes."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "User Controllable HTML Element Attribute (Potential XSS)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Validate all input and sanitize output it before writing to any HTML attributes."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/artists.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/login.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/search.php?test=query",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-1.html",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-1.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-1.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-1.html",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/Mod_Rewrite_Shop/RateProduct-1.html",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Missing Anti-clickjacking Header",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                },
+                {
+                    "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                    "risk": "Informational",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+                },
+                {
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Absence of Anti-CSRF Tokens",
+                    "risk": "Medium",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                },
+                {
+                    "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details."
+                },
+                {
+                    "name": "X-Content-Type-Options Header Missing",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing."
+                },
+                {
+                    "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/guestbook.php",
+                    "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers."
+                },
+                {
+                    "name": "Test Vulnerability",
+                    "risk": "Low",
+                    "url": "http://testphp.vulnweb.com/",
+                    "solution": "This is a test vulnerability added to verify the results display is working."
+                }
+            ],
+            "summary": {
+                "High": 0,
+                "Medium": 53,
+                "Low": 1,
+                "Informational": 14
+            }
+        }
+    }
+}

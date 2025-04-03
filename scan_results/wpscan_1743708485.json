@@ -1,0 +1,220 @@
+{
+  "banner": {
+    "description": "WordPress Security Scanner by the WPScan Team",
+    "version": "3.8.28",
+    "authors": [
+      "@_WPScan_",
+      "@ethicalhack3r",
+      "@erwan_lr",
+      "@firefart"
+    ],
+    "sponsor": "Sponsored by Automattic - https://automattic.com/"
+  },
+  "start_time": 1743708487,
+  "start_memory": 59936768,
+  "target_url": "https://demo.wpjobboard.net/",
+  "target_ip": "35.215.127.127",
+  "effective_url": "https://demo.wpjobboard.net/",
+  "interesting_findings": [
+    {
+      "url": "https://demo.wpjobboard.net/",
+      "to_s": "Headers",
+      "type": "headers",
+      "found_by": "Headers (Passive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+        "server: nginx",
+        "x-httpd-modphp: 1",
+        "host-header: 8441280b0c35cbc1147f8ba998a563a7",
+        "x-proxy-cache: HIT"
+      ]
+    },
+    {
+      "url": "https://demo.wpjobboard.net/robots.txt",
+      "to_s": "robots.txt found: https://demo.wpjobboard.net/robots.txt",
+      "type": "robots_txt",
+      "found_by": "Robots Txt (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+        "/wp-admin/",
+        "/wp-admin/admin-ajax.php"
+      ]
+    },
+    {
+      "url": "https://demo.wpjobboard.net/xmlrpc.php",
+      "to_s": "XML-RPC seems to be enabled: https://demo.wpjobboard.net/xmlrpc.php",
+      "type": "xmlrpc",
+      "found_by": "Link Tag (Passive Detection)",
+      "confidence": 30,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "http://codex.wordpress.org/XML-RPC_Pingback_API"
+        ],
+        "metasploit": [
+          "auxiliary/scanner/http/wordpress_ghost_scanner",
+          "auxiliary/dos/http/wordpress_xmlrpc_dos",
+          "auxiliary/scanner/http/wordpress_xmlrpc_login",
+          "auxiliary/scanner/http/wordpress_pingback_access"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "https://demo.wpjobboard.net/readme.html",
+      "to_s": "WordPress readme found: https://demo.wpjobboard.net/readme.html",
+      "type": "readme",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "https://demo.wpjobboard.net/wp-content/mu-plugins/",
+      "to_s": "This site has 'Must Use Plugins': https://demo.wpjobboard.net/wp-content/mu-plugins/",
+      "type": "mu_plugins",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 80,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "http://codex.wordpress.org/Must_Use_Plugins"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "https://demo.wpjobboard.net/wp-cron.php",
+      "to_s": "The external WP-Cron seems to be enabled: https://demo.wpjobboard.net/wp-cron.php",
+      "type": "wp_cron",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 60,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "https://www.iplocation.net/defend-wordpress-from-ddos",
+          "https://github.com/wpscanteam/wpscan/issues/1299"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    }
+  ],
+  "version": {
+    "number": "6.7.2",
+    "release_date": "2025-02-11",
+    "status": "latest",
+    "found_by": "Rss Generator (Passive Detection)",
+    "confidence": 100,
+    "interesting_entries": [
+      "https://demo.wpjobboard.net/feed/, <generator>https://wordpress.org/?v=6.7.2</generator>",
+      "https://demo.wpjobboard.net/comments/feed/, <generator>https://wordpress.org/?v=6.7.2</generator>"
+    ],
+    "confirmed_by": {
+
+    },
+    "vulnerabilities": [
+
+    ]
+  },
+  "main_theme": {
+    "slug": "twentytwelve",
+    "location": "https://demo.wpjobboard.net/wp-content/themes/twentytwelve/",
+    "latest_version": "4.4",
+    "last_updated": "2024-11-13T00:00:00.000Z",
+    "outdated": true,
+    "readme_url": false,
+    "directory_listing": false,
+    "error_log_url": null,
+    "style_url": "https://demo.wpjobboard.net/wp-content/themes/twentytwelve/style.css?ver=20231107",
+    "style_name": "Twenty Twelve",
+    "style_uri": "https://wordpress.org/themes/twentytwelve/",
+    "description": "The 2012 theme for WordPress is a fully responsive theme that looks great on any device. Features include a front page template with its own widgets, an optional display font, styling for post formats on both index and single views, and an optional no-sidebar page template. Make it yours with a custom menu, header image, and background.",
+    "author": "the WordPress team",
+    "author_uri": "https://wordpress.org/",
+    "template": null,
+    "license": "GNU General Public License v2 or later",
+    "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+    "tags": "blog, one-column, two-columns, right-sidebar, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready, block-patterns",
+    "text_domain": "twentytwelve",
+    "found_by": "Css Style In Homepage (Passive Detection)",
+    "confidence": 100,
+    "interesting_entries": [
+
+    ],
+    "confirmed_by": {
+      "Css Style In 404 Page (Passive Detection)": {
+        "confidence": 70,
+        "interesting_entries": [
+
+        ]
+      }
+    },
+    "vulnerabilities": [
+
+    ],
+    "version": {
+      "number": "4.1",
+      "confidence": 80,
+      "found_by": "Style (Passive Detection)",
+      "interesting_entries": [
+        "https://demo.wpjobboard.net/wp-content/themes/twentytwelve/style.css?ver=20231107, Match: 'Version: 4.1'"
+      ],
+      "confirmed_by": {
+
+      }
+    },
+    "parents": [
+
+    ]
+  },
+  "plugins": {
+
+  },
+  "themes": {
+
+  },
+  "vuln_api": {
+    "error": "No WPScan API Token given, as a result vulnerability data has not been output.\nYou can get a free API token with 25 daily requests by registering at https://wpscan.com/register"
+  },
+  "stop_time": 1743708536,
+  "elapsed": 49,
+  "requests_done": 693,
+  "cached_requests": 9,
+  "data_sent": 242669,
+  "data_sent_humanised": "236.981 KB",
+  "data_received": 725624,
+  "data_received_humanised": "708.617 KB",
+  "used_memory": 316620800,
+  "used_memory_humanised": "301.953 MB"
+}

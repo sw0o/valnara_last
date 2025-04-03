@@ -1,30 +1,24 @@
 import requests
+import re
 
 def is_wordpress(url):
-    if not url.startswith(('http://', 'https://')):
-        url = 'http://' + url
-
+    url = url if url.startswith(('http://', 'https://')) else 'http://' + url
+    
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, timeout=3, headers={
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'text/html'
+        })
         
-        content = response.text.lower()
-        
-        wordpress_indicators = [
-            '/wp-content/',
-            '/wp-includes/',
-            'generator" content="wordpress',
-            'wordpress.org'
+        # Fastest possible checks
+        quick_checks = [
+            '/wp-content/' in response.text.lower(),
+            '/wp-includes/' in response.text.lower(),
+            'wordpress' in response.text.lower(),
+            response.text.count('wp-') > 3
         ]
         
-        for indicator in wordpress_indicators:
-            if indicator in content:
-                return True
-        
-        return False
+        return any(quick_checks)
     
-    except Exception as e:
-        print(f"WordPress detection error: {e}")
+    except:
         return False

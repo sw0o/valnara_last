@@ -49,3 +49,6 @@ lxml==4.9.2
 
 # Error Tracking (Optional)
 sentry-sdk==1.21.1
+
+# report genbration 
+reportlab==3.6.11 
