@@ -7,6 +7,7 @@ from datetime import datetime
 from modules.url_validator import validate_url, check_site_availability, normalize_url
 from modules.cms_detector import is_wordpress
 from modules.zap_scanner import run_zap_scan, test_zap_connection, get_scan_results
+from modules.wp_scanner import scan_wordpress_site  # Import WordPress scanner
 
 # Import database modules
 from database import init_app
@@ -24,6 +25,9 @@ from database.operations import (
 app = Flask(__name__)
 app.secret_key = 'valnara-development-key'
 
+# WordPress API configuration
+app.config['WPSCAN_API_TOKEN'] = 'YOUR_API_TOKEN_HERE'  # Replace with your WPScan API token
+
 # Initialize database
 init_app(app)
 
@@ -40,7 +44,9 @@ def index():
     
     return render_template('index.html', 
                           zap_available=zap_available, 
-                          zap_version=zap_version)
+                          zap_version=zap_version,
+                          is_wordpress_checked=False,
+                          is_wordpress=False)
 
 @app.route('/scan', methods=['GET', 'POST'])
 def scan():
@@ -67,13 +73,16 @@ def scan():
         # Generate a unique scan ID based on timestamp
         scan_id = datetime.now().strftime("%Y%m%d%H%M%S")
         
+        # Check if the site is WordPress
+        wp_site = is_wordpress(target_url)
+        
         # Create scan info
         scan_info = {
             'id': scan_id,
             'url': target_url,
-            'scan_type': scan_type,
+            'scan_type': 6 if wp_site else scan_type,  # Use WP scan type (6) if WordPress detected
             'scan_depth': scan_depth,
-            'is_wordpress': is_wordpress(target_url),
+            'is_wordpress': wp_site,
             'status': 'pending',
             'start_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'progress': 0,
@@ -92,6 +101,34 @@ def scan():
     
     # If this is a GET request, show the form
     return render_template('scan.html')
+
+@app.route('/api/check_wordpress', methods=['POST'])
+def check_wordpress():
+    """API endpoint to check if a URL is a WordPress site"""
+    data = request.json
+    url = data.get('url', '')
+    
+    if not url:
+        return jsonify({'error': 'No URL provided'}), 400
+    
+    # Validate URL
+    if not validate_url(url):
+        return jsonify({'error': 'Invalid URL format'}), 400
+    
+    # Normalize URL
+    url = normalize_url(url)
+    
+    # Check if the site is available
+    if not check_site_availability(url):
+        return jsonify({'error': 'Site not available'}), 400
+    
+    # Check if it's a WordPress site
+    wp_detected = is_wordpress(url)
+    
+    return jsonify({
+        'url': url,
+        'is_wordpress': wp_detected
+    })
 
 @app.route('/scan_status/<scan_id>')
 def scan_status(scan_id):
@@ -144,14 +181,19 @@ def start_scan(scan_id):
         # Debug output
         print(f"Starting scan for {scan_info['url']} with scan type {scan_info['scan_type']}")
         
-        # Run ZAP scan - no output_file parameter now
-        scan_types = [scan_info['scan_type']]
-        
-        scan_result = run_zap_scan(
-            target=scan_info['url'],
-            scan_types=scan_types,
-            spider_depth=scan_info['scan_depth']
-        )
+        # Check if it's a WordPress scan
+        if scan_info['scan_type'] == 6:
+            # Run WordPress scan
+            api_token = app.config['WPSCAN_API_TOKEN']
+            scan_result = scan_wordpress_site(scan_info['url'], api_token)
+        else:
+            # Run ZAP scan as before
+            scan_types = [scan_info['scan_type']]
+            scan_result = run_zap_scan(
+                target=scan_info['url'],
+                scan_types=scan_types,
+                spider_depth=scan_info['scan_depth']
+            )
         
         # Debug output
         print(f"Scan completed. Result structure: {type(scan_result)}")
@@ -220,23 +262,33 @@ def api_scan_status(scan_id):
     # If the scan is running, fetch the latest results
     if scan_info['status'] == 'running':
         try:
-            # Get the latest scan results from ZAP
-            latest_results = get_scan_results(scan_info['url'])
-            
-            # Store intermediate results in the session
-            scan_info['vulnerabilities'] = latest_results.get('alerts', [])
-            scan_info['vulnerability_summary'] = latest_results.get('summary', {})
-            session['current_scan'] = scan_info
-            session.modified = True
-            
-            print(f"Updated running scan with {len(scan_info.get('vulnerabilities', []))} findings")
-            
-            return jsonify({
-                'status': 'running',
-                'progress': scan_info.get('progress', 0),
-                'results': latest_results,
-                'message': 'Scan in progress'
-            })
+            # Get the latest scan results based on scan type
+            if scan_info['scan_type'] == 6:  # WordPress scan
+                # For WordPress scans, we don't have real-time updates
+                # Just return the current status
+                return jsonify({
+                    'status': 'running',
+                    'progress': scan_info.get('progress', 50),  # Default to 50% for WordPress scans
+                    'message': 'WordPress scan in progress'
+                })
+            else:
+                # Get the latest scan results from ZAP
+                latest_results = get_scan_results(scan_info['url'])
+                
+                # Store intermediate results in the session
+                scan_info['vulnerabilities'] = latest_results.get('alerts', [])
+                scan_info['vulnerability_summary'] = latest_results.get('summary', {})
+                session['current_scan'] = scan_info
+                session.modified = True
+                
+                print(f"Updated running scan with {len(scan_info.get('vulnerabilities', []))} findings")
+                
+                return jsonify({
+                    'status': 'running',
+                    'progress': scan_info.get('progress', 0),
+                    'results': latest_results,
+                    'message': 'Scan in progress'
+                })
             
         except Exception as e:
             print(f"Error fetching real-time results: {str(e)}")
@@ -374,6 +426,84 @@ def test_results():
                 'Medium': 1,
                 'Low': 1,
                 'Informational': 0
+            }
+        }
+    }
+    
+    # Store in session and database
+    session['current_scan'] = scan_info
+    session.modified = True
+    create_scan(scan_info)
+    
+    return redirect(url_for('results', scan_id=scan_id))
+
+@app.route('/test_wordpress_results')
+def test_wordpress_results():
+    """Test route to view WordPress scan results with sample data"""
+    # Create a mock WordPress scan with test data
+    scan_id = "wptest" + datetime.now().strftime("%Y%m%d%H%M%S")
+    
+    # Sample WordPress scan info
+    scan_info = {
+        'id': scan_id,
+        'url': 'https://example-wordpress.com',
+        'scan_type': 6,  # WordPress scan
+        'scan_depth': 5,
+        'is_wordpress': True,
+        'status': 'completed',
+        'start_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'end_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'results': {
+            'alerts': [
+                {
+                    'name': 'WordPress Core 5.9.3 - Authentication Bypass',
+                    'risk': 'High',
+                    'url': 'https://example-wordpress.com',
+                    'solution': 'Update WordPress to the latest version.'
+                },
+                {
+                    'name': 'Plugin: contact-form-7 (v5.4.2) - SQL Injection',
+                    'risk': 'High',
+                    'url': 'https://example-wordpress.com/wp-content/plugins/contact-form-7/',
+                    'solution': 'Update contact-form-7 to the latest version or remove it if unused. Update to version 5.5.0 or later.'
+                },
+                {
+                    'name': 'Theme: twentytwenty (v1.8) - XSS Vulnerability',
+                    'risk': 'Medium',
+                    'url': 'https://example-wordpress.com/wp-content/themes/twentytwenty/',
+                    'solution': 'Update twentytwenty to the latest version or switch to a more secure theme. Update to version 1.9 or later.'
+                },
+                {
+                    'name': 'WordPress User Enumeration Possible',
+                    'risk': 'Medium',
+                    'url': 'https://example-wordpress.com/?author=1',
+                    'solution': 'Configure your site to prevent user enumeration by modifying .htaccess or using a security plugin.'
+                },
+                {
+                    'name': 'XML-RPC Interface Enabled',
+                    'risk': 'Medium',
+                    'url': 'https://example-wordpress.com/xmlrpc.php',
+                    'solution': 'Disable XML-RPC if not needed or restrict access to it through .htaccess.'
+                },
+                {
+                    'name': 'WordPress 5.9.3 Detected',
+                    'risk': 'Informational',
+                    'url': 'https://example-wordpress.com',
+                    'solution': 'Keep WordPress core updated to the latest secure version.'
+                }
+            ],
+            'summary': {
+                'High': 2,
+                'Medium': 3,
+                'Low': 0,
+                'Informational': 1
+            },
+            'scan_info': {
+                'wordpress': {
+                    'duration': 15,
+                    'duration_formatted': '00:00:15',
+                    'wp_version': '5.9.3'
+                }
             }
         }
     }

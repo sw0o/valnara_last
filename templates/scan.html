@@ -65,9 +65,18 @@
                                     <span class="badge bg-success">Passive Scan</span>
                                 {% elif scan.scan_type == 5 %}
                                     <span class="badge bg-danger">DOM XSS Scan</span>
+                                {% elif scan.scan_type == 6 %}
+                                    <span class="badge bg-primary">WordPress Scan</span>
                                 {% endif %}
                             </p>
                             <p><strong>Scan Depth:</strong> {{ scan.scan_depth }}</p>
+                            <p><strong>WordPress Site:</strong> 
+                                {% if scan.is_wordpress %}
+                                    <span class="badge bg-primary">Yes</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Start Time:</strong> {{ scan.start_time }}</p>
@@ -128,14 +137,22 @@
                     </div>
                 {% elif scan.status == 'running' %}
                     <div id="real-time-dashboard">
-                        <div class="alert alert-primary mt-3">
-                            <h5><i class="bi bi-arrow-repeat me-2"></i>Scan in Progress</h5>
-                            <p>Your security scan is currently running. This page automatically updates every 3 seconds with the latest findings.</p>
-                            
-                            <div class="progress mt-3" style="height: 25px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" id="scan-progress">
-                                    Scanning...
-                                </div>
+                        {% if scan.is_wordpress and scan.scan_type == 6 %}
+                            <div class="alert alert-info mt-3">
+                                <h5><i class="bi bi-wordpress me-2"></i>WordPress Security Scan</h5>
+                                <p>This is a specialized WordPress security scan that checks for WordPress-specific vulnerabilities in core files, plugins, and themes.</p>
+                                <p class="mb-0">The WPScan API is being used to analyze your WordPress installation.</p>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-primary mt-3">
+                                <h5><i class="bi bi-arrow-repeat me-2"></i>Scan in Progress</h5>
+                                <p>Your security scan is currently running. This page automatically updates every 3 seconds with the latest findings.</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="progress mt-3" style="height: 25px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" id="scan-progress">
+                                Scanning...
                             </div>
                         </div>
                         

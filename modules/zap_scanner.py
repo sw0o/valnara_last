@@ -359,3 +359,50 @@ def test_zap_connection():
         return True, version['version']
     except Exception as e:
         return False, str(e)
+
+def get_scan_progress(scan_id=None, scan_type=None):
+    """
+    Get the current progress of a running scan
+    
+    Args:
+        scan_id (str): The ID of the active scan (if checking active scan)
+        scan_type (int): The type of scan to check progress for
+        
+    Returns:
+        int: Percentage of scan completion (0-100)
+    """
+    try:
+        if scan_type == 3:  # Active scan
+            if scan_id:
+                progress = zap_api_call('ascan', 'view', 'status', {'scanId': scan_id})
+                return int(progress.get('status', 0))
+            else:
+                # Get the most recent scan if no ID provided
+                return 50  # Default to 50% if no specific scan ID
+                
+        elif scan_type == 1:  # Spider scan
+            if scan_id:
+                progress = zap_api_call('spider', 'view', 'status', {'scanId': scan_id})
+                return int(progress.get('status', 0))
+            else:
+                return 50
+                
+        elif scan_type == 2:  # Ajax spider
+            status = zap_api_call('ajaxSpider', 'view', 'status')
+            # Ajax spider doesn't have a percentage, just running/not running
+            return 50 if status.get('running') == 'true' else 100
+            
+        elif scan_type == 4:  # Passive scan
+            records = zap_api_call('pscan', 'view', 'recordsToScan')
+            current = int(records.get('recordsToScan', 0))
+            # Approximate progress based on records left to scan
+            return 100 if current == 0 else min(95, max(0, 100 - current))
+            
+        elif scan_type == 5:  # DOM XSS scan
+            # DOM XSS doesn't provide progress info, estimate based on time
+            return 50  # Default to 50%
+            
+        return 50  # Default fallback
+    except Exception as e:
+        print(f"Error getting scan progress: {str(e)}")
+        return 50  # Default on error

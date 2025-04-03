@@ -175,26 +175,57 @@ function stopPolling() {
  * @param {string} redirectUrl - URL to redirect to
  * @param {string} scanId - Scan ID (used as fallback)
  */
+// In the redirectToResults function in main.js
+
 function redirectToResults(redirectUrl, scanId) {
     console.log('Attempting to redirect to results...');
     
-    // Add a delay to ensure everything is saved
-    setTimeout(() => {
-        try {
-            if (redirectUrl) {
-                console.log(`Redirecting to: ${redirectUrl}`);
-                window.location.replace(redirectUrl);
-            } else {
-                // Fallback
-                console.log('No redirect URL provided, using fallback');
-                window.location.replace(`/results/${scanId}`);
+    // First, try once more to make sure the scan is really done
+    fetch(`/api/scan_status/${scanId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Add a delay to ensure everything is saved
+            setTimeout(() => {
+                try {
+                    // Check if we have a status and it's completed
+                    if (data.status === 'completed') {
+                        if (redirectUrl) {
+                            console.log(`Redirecting to: ${redirectUrl}`);
+                            window.location.href = redirectUrl; // Use href instead of replace
+                        } else {
+                            console.log('No redirect URL provided, using fallback');
+                            window.location.href = `/results/${scanId}`;
+                        }
+                    } else {
+                        // If not completed yet, show a manual redirect button
+                        const manualLink = document.getElementById('manual-results-link');
+                        if (manualLink) {
+                            manualLink.style.display = 'block';
+                        }
+                        
+                        // Try again in 5 seconds
+                        setTimeout(() => {
+                            redirectToResults(redirectUrl, scanId);
+                        }, 5000);
+                    }
+                } catch (e) {
+                    console.error('Redirect error:', e);
+                    // Show manual redirect button
+                    const manualLink = document.getElementById('manual-results-link');
+                    if (manualLink) {
+                        manualLink.style.display = 'block';
+                    }
+                }
+            }, 3000); // Increased delay to 3 seconds
+        })
+        .catch(error => {
+            console.error('Error checking final status:', error);
+            // Show manual redirect button
+            const manualLink = document.getElementById('manual-results-link');
+            if (manualLink) {
+                manualLink.style.display = 'block';
             }
-        } catch (e) {
-            console.error('Redirect error:', e);
-            // Last resort - reload the page
-            window.location.reload();
-        }
-    }, 1500);
+        });
 }
 
 /**
