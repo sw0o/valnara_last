@@ -1,11 +1,11 @@
 /* Main CSS for Valnara Security Scanner */
 
 :root {
-    --golden: #D4AF37;
-    --olive: #808000;
-    --olive-light: #A9A957;
+    --golden: #3b4797;
+    --olive: #1f1f1d;
+    --olive-light: #161604;
     --olive-dark: #5A5A00;
-    --golden-light: #F1D78C;
+    --golden-light: rgb(93, 87, 71);
     --bg-gradient: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(128,128,0,0.1) 100%);
 }
 
