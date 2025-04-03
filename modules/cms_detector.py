@@ -1,27 +1,30 @@
 import requests
 
 def is_wordpress(url):
+    if not url.startswith(('http://', 'https://')):
+        url = 'http://' + url
 
-    api_key = "w43u2hdtv0t1mbb60321aakv8zbvqj0k2f682afp1y3r7b6rlrq0262bd250ibho20zsa6"
-    api_url = "https://whatcms.org/API/Tech"
-    
     try:
-        response = requests.get(api_url, params={"key": api_key, "url": url})
-        data = response.json()
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
         
-        if data.get("result", {}).get("code") == 200:
-            for tech in data.get("results", []):
-                if tech.get("name", "").lower() == "wordpress":
-                    return True
-        return False
-    except:
+        content = response.text.lower()
+        
+        wordpress_indicators = [
+            '/wp-content/',
+            '/wp-includes/',
+            'generator" content="wordpress',
+            'wordpress.org'
+        ]
+        
+        for indicator in wordpress_indicators:
+            if indicator in content:
+                return True
+        
         return False
     
-    """
-    
-    Output cases:
-    - Returns True: wp detected 
-    - Returns False: In the following cases:
-      - WordPress is not detected but API call succeeded
-      - errors
-    """
+    except Exception as e:
+        print(f"WordPress detection error: {e}")
+        return False

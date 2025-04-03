@@ -25,8 +25,6 @@ from database.operations import (
 app = Flask(__name__)
 app.secret_key = 'valnara-development-key'
 
-# WordPress API configuration
-app.config['WPSCAN_API_TOKEN'] = 'YOUR_API_TOKEN_HERE'  # Replace with your WPScan API token
 
 # Initialize database
 init_app(app)
@@ -50,37 +48,30 @@ def index():
 
 @app.route('/scan', methods=['GET', 'POST'])
 def scan():
-    """Handle scan requests and display scan status"""
     if request.method == 'POST':
-        # Get form data
         target_url = request.form.get('url', '').strip()
-        scan_type = int(request.form.get('scan_type', 4))  # Default to passive scan (4)
-        scan_depth = int(request.form.get('scan_depth', 5))  # Default depth is 5
+        scan_type = int(request.form.get('scan_type', 4))
+        scan_depth = int(request.form.get('scan_depth', 5))
         
-        # Validate URL
         if not validate_url(target_url):
             flash('Invalid URL format. Please enter a valid URL.', 'danger')
             return redirect(url_for('index'))
         
-        # Normalize URL
         target_url = normalize_url(target_url)
         
-        # Check if the site is available
         if not check_site_availability(target_url):
             flash('The target site is not available. Please check the URL and try again.', 'danger')
             return redirect(url_for('index'))
         
-        # Generate a unique scan ID based on timestamp
         scan_id = datetime.now().strftime("%Y%m%d%H%M%S")
         
-        # Check if the site is WordPress
         wp_site = is_wordpress(target_url)
+        print(f"DEBUG - WordPress detection result: {wp_site} for {target_url}")
         
-        # Create scan info
         scan_info = {
             'id': scan_id,
             'url': target_url,
-            'scan_type': 6 if wp_site else scan_type,  # Use WP scan type (6) if WordPress detected
+            'scan_type': 6 if wp_site else scan_type,
             'scan_depth': scan_depth,
             'is_wordpress': wp_site,
             'status': 'pending',
@@ -89,17 +80,15 @@ def scan():
             'vulnerabilities': []
         }
         
-        # Store in session for simplicity (in a real app you'd use a database)
-        session['current_scan'] = scan_info
-        session.modified = True  # Explicitly mark session as modified
+        print(f"DEBUG - Scan info created: WordPress site? {wp_site}, Scan type: {scan_info['scan_type']}, Type of scan_type: {type(scan_info['scan_type'])}")
         
-        # Store in database
+        session['current_scan'] = scan_info
+        session.modified = True
+        
         create_scan(scan_info)
         
-        # Redirect to scan status page
         return redirect(url_for('scan_status', scan_id=scan_id))
     
-    # If this is a GET request, show the form
     return render_template('scan.html')
 
 @app.route('/api/check_wordpress', methods=['POST'])
@@ -154,40 +143,30 @@ def scan_status(scan_id):
 
 @app.route('/start_scan/<scan_id>', methods=['POST'])
 def start_scan(scan_id):
-    """API endpoint to start the scan"""
-    # Try to get scan from session first
     scan_info = session.get('current_scan')
     
-    # If not in session, try database
     if not scan_info or scan_info['id'] != scan_id:
         scan_info = get_scan_by_id(scan_id)
         if not scan_info:
             return jsonify({'status': 'error', 'message': 'Scan not found'}), 404
         
-        # Update session with database data
         session['current_scan'] = scan_info
         session.modified = True
     
     try:
-        # Update scan status
         scan_info['status'] = 'running'
         scan_info['progress'] = 0
         session['current_scan'] = scan_info
         session.modified = True
         
-        # Update database
         update_scan_status(scan_id, 'running')
         
-        # Debug output
-        print(f"Starting scan for {scan_info['url']} with scan type {scan_info['scan_type']}")
-        
-        # Check if it's a WordPress scan
-        if scan_info['scan_type'] == 6:
-            # Run WordPress scan
-            api_token = app.config['WPSCAN_API_TOKEN']
-            scan_result = scan_wordpress_site(scan_info['url'], api_token)
+        # WordPress scan condition
+        if scan_info.get('is_wordpress', False) or scan_info.get('scan_type') == 6:
+            print("ATTEMPTING WORDPRESS SCAN")
+            scan_result = scan_wordpress_site(scan_info['url'])
         else:
-            # Run ZAP scan as before
+            print("ATTEMPTING ZAP SCAN")
             scan_types = [scan_info['scan_type']]
             scan_result = run_zap_scan(
                 target=scan_info['url'],
@@ -195,24 +174,17 @@ def start_scan(scan_id):
                 spider_depth=scan_info['scan_depth']
             )
         
-        # Debug output
-        print(f"Scan completed. Result structure: {type(scan_result)}")
-        print(f"Result keys: {scan_result.keys() if isinstance(scan_result, dict) else 'Not a dict'}")
+        print(f"Scan Result Type: {type(scan_result)}")
+        print(f"Scan Result Keys: {scan_result.keys() if isinstance(scan_result, dict) else 'Not a dict'}")
         
-        # Update scan info with results
         scan_info['status'] = 'completed'
         scan_info['progress'] = 100
         scan_info['end_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        scan_info['results'] = scan_result  # Store results directly in session
+        scan_info['results'] = scan_result
         session['current_scan'] = scan_info
         session.modified = True
         
-        # Update database
         update_scan_results(scan_id, scan_result)
-        
-        # Debug output
-        print(f"Scan marked as completed. Status: {scan_info['status']}")
-        print(f"Redirecting to: {url_for('results', scan_id=scan_id)}")
         
         return jsonify({
             'status': 'success',
@@ -221,7 +193,6 @@ def start_scan(scan_id):
         })
         
     except Exception as e:
-        # Detailed error logging
         import traceback
         print(f"Scan failed with error: {str(e)}")
         print(traceback.format_exc())
@@ -231,14 +202,12 @@ def start_scan(scan_id):
         session['current_scan'] = scan_info
         session.modified = True
         
-        # Update database
         update_scan_status(scan_id, 'failed')
         
         return jsonify({
             'status': 'error',
             'message': f'Scan failed: {str(e)}'
         }), 500
-
 @app.route('/api/scan_status/<scan_id>')
 def api_scan_status(scan_id):
     """API endpoint to get current scan status and real-time results"""
@@ -525,4 +494,4 @@ def server_error(e):
     return render_template('error.html', error_code=500, error_message="Internal server error"), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5100)
