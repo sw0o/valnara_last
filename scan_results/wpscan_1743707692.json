@@ -1,0 +1,32 @@
+{
+  "banner": {
+    "description": "WordPress Security Scanner by the WPScan Team",
+    "version": "3.8.28",
+    "authors": [
+      "@_WPScan_",
+      "@ethicalhack3r",
+      "@erwan_lr",
+      "@firefart"
+    ],
+    "sponsor": "Sponsored by Automattic - https://automattic.com/"
+  },
+  "start_time": 1743707694,
+  "start_memory": 59793408,
+  "target_url": "https://wordpress.org/",
+  "target_ip": "198.143.164.252",
+  "effective_url": "https://wordpress.org/",
+  "vuln_api": {
+    "error": "No WPScan API Token given, as a result vulnerability data has not been output.\nYou can get a free API token with 25 daily requests by registering at https://wpscan.com/register"
+  },
+  "stop_time": 1743707700,
+  "elapsed": 5,
+  "requests_done": 20,
+  "cached_requests": 2,
+  "data_sent": 5691,
+  "data_sent_humanised": "5.558 KB",
+  "data_received": 733502,
+  "data_received_humanised": "716.311 KB",
+  "used_memory": 109338624,
+  "used_memory_humanised": "104.273 MB",
+  "scan_aborted": "Canceled by User"
+}
