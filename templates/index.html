@@ -27,9 +27,36 @@
                         <div class="form-text">Enter the URL or IP address of the target you want to scan.</div>
                     </div>
                     
+                    <!-- WordPress detection section -->
+                    <div id="wordpress-detection" class="mt-3 {% if not is_wordpress_checked %}d-none{% endif %}">
+                        <div class="alert {% if is_wordpress %}alert-success{% else %}alert-info{% endif %} d-flex align-items-center">
+                            <div class="me-3">
+                                {% if is_wordpress %}
+                                <i class="bi bi-wordpress text-success fs-3"></i>
+                                {% else %}
+                                <i class="bi bi-wordpress text-secondary fs-3"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <strong>WordPress Detection:</strong>
+                                {% if is_wordpress %}
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle-fill"></i> WordPress detected!
+                                    <span class="d-block small">A WordPress-specific scan will be performed.</span>
+                                </span>
+                                {% else %}
+                                <span class="text-secondary">
+                                    <i class="bi bi-x-circle-fill"></i> Not a WordPress site.
+                                    <span class="d-block small">Standard scan options are available.</span>
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="scan_type" class="form-label">Scan Type</label>
-                        <select class="form-select" id="scan_type" name="scan_type">
+                        <select class="form-select" id="scan_type" name="scan_type" {% if is_wordpress %}disabled{% endif %}>
                             <option value="4" selected>Passive Scan (Default)</option>
                             <option value="1">Spider Scan</option>
                             <option value="2">Ajax Spider Scan</option>
@@ -63,4 +90,102 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlInput = document.getElementById('url');
+        const scanTypeSelect = document.getElementById('scan_type');
+        const wordpressDetection = document.getElementById('wordpress-detection');
+        
+        // Function to check WordPress status
+        async function checkWordPress(url) {
+            if (!url) return;
+            
+            try {
+                const response = await fetch('/api/check_wordpress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url }),
+                });
+                
+                const data = await response.json();
+                
+                // Show WordPress detection section
+                wordpressDetection.classList.remove('d-none');
+                
+                if (data.is_wordpress) {
+                    // Update WordPress detection UI
+                    wordpressDetection.innerHTML = `
+                        <div class="alert alert-success d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="bi bi-wordpress text-success fs-3"></i>
+                            </div>
+                            <div>
+                                <strong>WordPress Detection:</strong>
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle-fill"></i> WordPress detected!
+                                    <span class="d-block small">A WordPress-specific scan will be performed.</span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Disable regular scan options
+                    scanTypeSelect.disabled = true;
+                    
+                    // Set hidden input for WordPress scan
+                    if (!document.getElementById('is_wordpress_input')) {
+                        const wpInput = document.createElement('input');
+                        wpInput.type = 'hidden';
+                        wpInput.name = 'is_wordpress';
+                        wpInput.id = 'is_wordpress_input';
+                        wpInput.value = 'true';
+                        document.querySelector('form').appendChild(wpInput);
+                    }
+                } else {
+                    // Update WordPress detection UI for non-WordPress site
+                    wordpressDetection.innerHTML = `
+                        <div class="alert alert-info d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="bi bi-wordpress text-secondary fs-3"></i>
+                            </div>
+                            <div>
+                                <strong>WordPress Detection:</strong>
+                                <span class="text-secondary">
+                                    <i class="bi bi-x-circle-fill"></i> Not a WordPress site.
+                                    <span class="d-block small">Standard scan options are available.</span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Enable regular scan options
+                    scanTypeSelect.disabled = false;
+                    
+                    // Remove WordPress hidden input if exists
+                    const wpInput = document.getElementById('is_wordpress_input');
+                    if (wpInput) wpInput.remove();
+                }
+            } catch (error) {
+                console.error('Error checking WordPress:', error);
+                wordpressDetection.classList.add('d-none');
+                scanTypeSelect.disabled = false;
+            }
+        }
+        
+        // Add event listener for URL input blur
+        urlInput.addEventListener('blur', function() {
+            if (this.value.trim()) {
+                checkWordPress(this.value.trim());
+            } else {
+                wordpressDetection.classList.add('d-none');
+                scanTypeSelect.disabled = false;
+            }
+        });
+    });
+</script>
 {% endblock %}
