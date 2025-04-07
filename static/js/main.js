@@ -47,7 +47,7 @@ function initScanStatus() {
             if (manualLink) {
                 manualLink.style.display = 'block';
             }
-        }, 15000);
+        }, 35000);
     }
 }
 
@@ -115,19 +115,19 @@ function startScan(scanId) {
     .then(data => {
         console.log('Scan start response:', data);
         
-        if (data.status === 'success') {
-            // Scan started successfully, reload page to show running state
-            window.location.reload();
-        } else if (data.status === 'completed') {
-            // Scan already completed, redirect to results
-            console.log('Scan already completed, redirecting to results');
-            redirectToResults(data.redirect, scanId);
+        if (data.status === 'completed') {
+            // Scan already completed, force redirect to results
+            console.log('Scan completed, redirecting to results');
+            // Force a complete page navigation
+            window.location.href = data.redirect;
+            
+            // If for some reason the above doesn't work, try a harder redirect after a short delay
+            setTimeout(() => {
+                window.top.location.href = data.redirect;
+            }, 500);
         } else {
-            // Error starting scan
-            console.error('Error starting scan:', data.message);
-            alert('Error starting scan: ' + data.message);
-            startButton.disabled = false;
-            startButton.innerHTML = originalButtonText;
+            // Just reload the page to show updated status
+            window.location.reload();
         }
     })
     .catch(error => {
@@ -154,7 +154,7 @@ function startPolling(scanId) {
     // Then set up interval (every 3 seconds)
     pollIntervalId = setInterval(() => {
         pollScanStatus(scanId);
-    }, 3000);
+    }, 10000);
     
     console.log(`Polling started for scan ${scanId}`);
 }
@@ -180,52 +180,25 @@ function stopPolling() {
 function redirectToResults(redirectUrl, scanId) {
     console.log('Attempting to redirect to results...');
     
-    // First, try once more to make sure the scan is really done
-    fetch(`/api/scan_status/${scanId}`)
-        .then(response => response.json())
-        .then(data => {
-            // Add a delay to ensure everything is saved
-            setTimeout(() => {
-                try {
-                    // Check if we have a status and it's completed
-                    if (data.status === 'completed') {
-                        if (redirectUrl) {
-                            console.log(`Redirecting to: ${redirectUrl}`);
-                            window.location.href = redirectUrl; // Use href instead of replace
-                        } else {
-                            console.log('No redirect URL provided, using fallback');
-                            window.location.href = `/results/${scanId}`;
-                        }
-                    } else {
-                        // If not completed yet, show a manual redirect button
-                        const manualLink = document.getElementById('manual-results-link');
-                        if (manualLink) {
-                            manualLink.style.display = 'block';
-                        }
-                        
-                        // Try again in 5 seconds
-                        setTimeout(() => {
-                            redirectToResults(redirectUrl, scanId);
-                        }, 5000);
-                    }
-                } catch (e) {
-                    console.error('Redirect error:', e);
-                    // Show manual redirect button
-                    const manualLink = document.getElementById('manual-results-link');
-                    if (manualLink) {
-                        manualLink.style.display = 'block';
-                    }
-                }
-            }, 3000); // Increased delay to 3 seconds
-        })
-        .catch(error => {
-            console.error('Error checking final status:', error);
+    // Don't make another API call, just redirect directly
+    setTimeout(() => {
+        try {
+            if (redirectUrl) {
+                console.log(`Redirecting to: ${redirectUrl}`);
+                window.location.href = redirectUrl;
+            } else {
+                console.log('No redirect URL provided, using fallback');
+                window.location.href = `/results/${scanId}`;
+            }
+        } catch (e) {
+            console.error('Redirect error:', e);
             // Show manual redirect button
             const manualLink = document.getElementById('manual-results-link');
             if (manualLink) {
                 manualLink.style.display = 'block';
             }
-        });
+        }
+    }, 1000); // Give a 1 second delay to ensure data is saved
 }
 
 /**
