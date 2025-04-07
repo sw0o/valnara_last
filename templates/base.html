@@ -316,60 +316,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const chartElement = document.getElementById('vulnerabilityChart');
-    if (chartElement) {
-        console.log('Chart element found');
-        console.log('Data attributes:', {
-            high: chartElement.dataset.high,
-            medium: chartElement.dataset.medium,
-            low: chartElement.dataset.low,
-            info: chartElement.dataset.info
-        });
         
-        // Try creating the chart directly here
-        try {
-            const ctx = chartElement.getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['High', 'Medium', 'Low', 'Informational'],
-                    datasets: [{
-                        data: [
-                            parseInt(chartElement.dataset.high || 0), 
-                            parseInt(chartElement.dataset.medium || 0), 
-                            parseInt(chartElement.dataset.low || 0), 
-                            parseInt(chartElement.dataset.info || 0)
-                        ],
-                        backgroundColor: [
-                            '#dc3545', // High - red
-                            '#ffc107', // Medium - yellow
-                            '#17a2b8', // Low - cyan
-                            '#198754'  // Info - green
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-            console.log('Chart created successfully');
-        } catch (error) {
-            console.error('Error creating chart:', error);
-        }
-    } else {
-        console.error('Chart element not found');
-    }
-});
-</script><script>
     document.addEventListener('DOMContentLoaded', function() {
         const chartElement = document.getElementById('vulnerabilityChart');
         if (chartElement) {

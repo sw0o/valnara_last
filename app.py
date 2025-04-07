@@ -84,7 +84,8 @@ def scan():
         
         print(f"DEBUG - Scan info created: WordPress site? {wp_site}, Scan type: {scan_info['scan_type']}, Type of scan_type: {type(scan_info['scan_type'])}")
         
-        session['current_scan'] = scan_info
+        # Store only scan ID in session, not the full scan info
+        session['current_scan_id'] = scan_id
         session.modified = True
         
         create_scan(scan_info)
@@ -124,19 +125,11 @@ def check_wordpress():
 @app.route('/scan_status/<scan_id>')
 def scan_status(scan_id):
     """Display scan status page"""
-    # Try to get scan from session first
-    scan_info = session.get('current_scan')
-    
-    # If not in session, try database
-    if not scan_info or scan_info['id'] != scan_id:
-        scan_info = get_scan_by_id(scan_id)
-        if not scan_info:
-            flash('Scan not found', 'danger')
-            return redirect(url_for('index'))
-        
-        # Update session with database data
-        session['current_scan'] = scan_info
-        session.modified = True
+    # Always get scan info from database
+    scan_info = get_scan_by_id(scan_id)
+    if not scan_info:
+        flash('Scan not found', 'danger')
+        return redirect(url_for('index'))
     
     # Debug output to console
     print(f"Rendering scan status page for scan {scan_id}, status: {scan_info['status']}")
@@ -145,24 +138,17 @@ def scan_status(scan_id):
 
 @app.route('/start_scan/<scan_id>', methods=['POST'])
 def start_scan(scan_id):
-    scan_info = session.get('current_scan')
+    # Always get scan info from database
+    scan_info = get_scan_by_id(scan_id)
+    if not scan_info:
+        return jsonify({'status': 'error', 'message': 'Scan not found'}), 404
     
-    if not scan_info or scan_info['id'] != scan_id:
-        scan_info = get_scan_by_id(scan_id)
-        if not scan_info:
-            return jsonify({'status': 'error', 'message': 'Scan not found'}), 404
-        
-        session['current_scan'] = scan_info
-        session.modified = True
+    # First update to running state and save it before starting the scan
+    scan_info['status'] = 'running'
+    scan_info['progress'] = 0
+    update_scan_status(scan_id, 'running')
     
     try:
-        scan_info['status'] = 'running'
-        scan_info['progress'] = 0
-        session['current_scan'] = scan_info
-        session.modified = True
-        
-        update_scan_status(scan_id, 'running')
-        
         # WordPress scan condition
         if scan_info.get('is_wordpress', False) or scan_info.get('scan_type') == 6:
             print("ATTEMPTING WORDPRESS SCAN")
@@ -176,20 +162,20 @@ def start_scan(scan_id):
                 spider_depth=scan_info['scan_depth']
             )
         
-        print(f"Scan Result Type: {type(scan_result)}")
-        print(f"Scan Result Keys: {scan_result.keys() if isinstance(scan_result, dict) else 'Not a dict'}")
-        
+        # Update to completed status
         scan_info['status'] = 'completed'
         scan_info['progress'] = 100
         scan_info['end_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        scan_info['results'] = scan_result
-        session['current_scan'] = scan_info
-        session.modified = True
         
+        # Save to database - this stores the full results
         update_scan_results(scan_id, scan_result)
         
+        # Update session with just the ID
+        session['current_scan_id'] = scan_id
+        session.modified = True
+        
         return jsonify({
-            'status': 'success',
+            'status': 'completed',
             'message': 'Scan completed successfully',
             'redirect': url_for('results', scan_id=scan_id)
         })
@@ -199,32 +185,25 @@ def start_scan(scan_id):
         print(f"Scan failed with error: {str(e)}")
         print(traceback.format_exc())
         
-        scan_info['status'] = 'failed'
-        scan_info['error'] = str(e)
-        session['current_scan'] = scan_info
-        session.modified = True
-        
+        # Update status to failed
         update_scan_status(scan_id, 'failed')
+        
+        # Store only ID in session
+        session['current_scan_id'] = scan_id
+        session.modified = True
         
         return jsonify({
             'status': 'error',
             'message': f'Scan failed: {str(e)}'
         }), 500
+
 @app.route('/api/scan_status/<scan_id>')
 def api_scan_status(scan_id):
     """API endpoint to get current scan status and real-time results"""
-    # Try to get scan from session first
-    scan_info = session.get('current_scan')
-    
-    # If not in session, try database
-    if not scan_info or scan_info['id'] != scan_id:
-        scan_info = get_scan_by_id(scan_id)
-        if not scan_info:
-            return jsonify({'status': 'error', 'message': 'Scan not found'}), 404
-        
-        # Update session with database data
-        session['current_scan'] = scan_info
-        session.modified = True
+    # Always get scan info from database
+    scan_info = get_scan_by_id(scan_id)
+    if not scan_info:
+        return jsonify({'status': 'error', 'message': 'Scan not found'}), 404
     
     # Debug output
     print(f"API scan status check for {scan_id}")
@@ -246,13 +225,15 @@ def api_scan_status(scan_id):
                 # Get the latest scan results from ZAP
                 latest_results = get_scan_results(scan_info['url'])
                 
-                # Store intermediate results in the session
-                scan_info['vulnerabilities'] = latest_results.get('alerts', [])
-                scan_info['vulnerability_summary'] = latest_results.get('summary', {})
-                session['current_scan'] = scan_info
-                session.modified = True
-                
-                print(f"Updated running scan with {len(scan_info.get('vulnerabilities', []))} findings")
+                # For real-time updates, update database directly (don't store in session)
+                if 'alerts' in latest_results:
+                    # Create a temporary results object to update the database
+                    temp_results = {
+                        'alerts': latest_results.get('alerts', []),
+                        'summary': latest_results.get('summary', {})
+                    }
+                    # Update database with current progress
+                    update_scan_results(scan_id, temp_results)
                 
                 return jsonify({
                     'status': 'running',
@@ -290,7 +271,7 @@ def api_scan_status(scan_id):
                 'redirect': url_for('results', scan_id=scan_id)
             })
         else:
-            print("Completed but no results found in session or database")
+            print("Completed but no results found in database")
         
     # For other statuses, just return the basic info
     return jsonify({
@@ -302,20 +283,11 @@ def api_scan_status(scan_id):
 @app.route('/results/<scan_id>')
 def results(scan_id):
     """Display the scan results page"""
-    # Try to get scan from session first
-    scan_info = session.get('current_scan')
-    
-    # If not in session, try database
-    if not scan_info or scan_info['id'] != scan_id:
-        print(f"Scan {scan_id} not found in session, checking database")
-        scan_info = get_scan_by_id(scan_id)
-        if not scan_info:
-            flash('Scan not found', 'danger')
-            return redirect(url_for('index'))
-        
-        # Update session with database data
-        session['current_scan'] = scan_info
-        session.modified = True
+    # Always get scan info from database
+    scan_info = get_scan_by_id(scan_id)
+    if not scan_info:
+        flash('Scan not found', 'danger')
+        return redirect(url_for('index'))
     
     if scan_info['status'] != 'completed':
         flash('Scan is still in progress', 'warning')
@@ -401,8 +373,8 @@ def test_results():
         }
     }
     
-    # Store in session and database
-    session['current_scan'] = scan_info
+    # Store in database and only ID in session
+    session['current_scan_id'] = scan_id
     session.modified = True
     create_scan(scan_info)
     
@@ -479,12 +451,17 @@ def test_wordpress_results():
         }
     }
     
-    # Store in session and database
-    session['current_scan'] = scan_info
+    # Store in database and only ID in session
+    session['current_scan_id'] = scan_id
     session.modified = True
     create_scan(scan_info)
     
     return redirect(url_for('results', scan_id=scan_id))
+
+# Add favicon route
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
 
 # Custom error handlers
 @app.errorhandler(404)
@@ -494,6 +471,7 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('error.html', error_code=500, error_message="Internal server error"), 500
+
 @app.route('/download_report/<scan_id>')
 def download_report(scan_id):
     # Retrieve scan results from database
@@ -514,5 +492,6 @@ def download_report(scan_id):
         print(f"Report generation error: {e}")
         flash('Error generating report', 'danger')
         return redirect(url_for('results', scan_id=scan_id))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
