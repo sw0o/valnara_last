@@ -1,39 +1,16 @@
 import unittest
 import sys
 import os
-import time
 from unittest.mock import patch, Mock
-from datetime import datetime
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 from modules.url_validator import validate_url, check_site_availability, normalize_url, get_domain
 
-class TimedTestCase(unittest.TestCase):
-    def setUp(self):
-        self.start_time = time.time()
-        
-    def tearDown(self):
-        end_time = time.time()
-        elapsed = end_time - self.start_time
-        print(f"{self.id()}: {elapsed:.6f} seconds")
-
-class TestUrlValidator(TimedTestCase):
+class TestUrlValidator(unittest.TestCase):
     """Test suite for the url_validator module."""
     
-    @classmethod
-    def setUpClass(cls):
-        cls.start_time = time.time()
-        print(f"\nStarting tests at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-    @classmethod
-    def tearDownClass(cls):
-        end_time = time.time()
-        total_elapsed = end_time - cls.start_time
-        print(f"\nTotal test time: {total_elapsed:.6f} seconds")
-        print(f"Finished tests at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
     def test_validate_url_with_valid_urls(self):
         """Test validate_url with valid URLs."""
         valid_urls = [
@@ -78,13 +55,9 @@ class TestUrlValidator(TimedTestCase):
             'localhost:8080',
         ]
         
-        # Time individual function calls
         for url in valid_urls:
-            start = time.time()
-            result = validate_url(url)
-            end = time.time()
-            self.assertTrue(result, f"URL should be valid: {url}")
-            print(f"  validate_url({url!r}): {(end-start):.6f} seconds")
+            with self.subTest(url=url):
+                self.assertTrue(validate_url(url), f"URL should be valid: {url}")
 
     def test_validate_url_with_invalid_urls(self):
         """Test validate_url with invalid URLs."""
@@ -106,15 +79,17 @@ class TestUrlValidator(TimedTestCase):
             # Malformed with special characters
             'http://exam ple.com',  # Space in domain
             'http://exa_mple.com',  # Underscore in domain (not allowed)
+            
+            # Non-string inputs
+            None,
+            123,
+            {},
+            []
         ]
         
-        # Time individual function calls
         for url in invalid_urls:
-            start = time.time()
-            result = validate_url(url)
-            end = time.time()
-            self.assertFalse(result, f"URL should be invalid: {url}")
-            print(f"  validate_url({url!r}): {(end-start):.6f} seconds")
+            with self.subTest(url=url):
+                self.assertFalse(validate_url(url), f"URL should be invalid: {url}")
 
     def test_normalize_url(self):
         """Test normalize_url function."""
@@ -144,13 +119,18 @@ class TestUrlValidator(TimedTestCase):
             ('http://example.com/#section', 'http://example.com/'),
         ]
         
-        # Time individual function calls
         for input_url, expected_url in test_cases:
-            start = time.time()
-            result = normalize_url(input_url)
-            end = time.time()
-            self.assertEqual(result, expected_url)
-            print(f"  normalize_url({input_url!r}): {(end-start):.6f} seconds")
+            with self.subTest(input_url=input_url):
+                self.assertEqual(normalize_url(input_url), expected_url)
+    
+    def test_normalize_url_raises_exception(self):
+        """Test normalize_url raises exception for invalid inputs."""
+        invalid_inputs = [None, '', 123, {}, []]
+        
+        for input_val in invalid_inputs:
+            with self.subTest(input=input_val):
+                with self.assertRaises(TypeError):
+                    normalize_url(input_val)
 
     def test_get_domain(self):
         """Test get_domain function."""
@@ -185,13 +165,18 @@ class TestUrlValidator(TimedTestCase):
             ('https://127.0.0.1:8080', '127.0.0.1:8080'),
         ]
         
-        # Time individual function calls
         for input_url, expected_domain in test_cases:
-            start = time.time()
-            result = get_domain(input_url)
-            end = time.time()
-            self.assertEqual(result, expected_domain)
-            print(f"  get_domain({input_url!r}): {(end-start):.6f} seconds")
+            with self.subTest(input_url=input_url):
+                self.assertEqual(get_domain(input_url), expected_domain)
+    
+    def test_get_domain_raises_exception(self):
+        """Test get_domain raises exception for invalid inputs."""
+        invalid_inputs = [None, '', 123, {}, []]
+        
+        for input_val in invalid_inputs:
+            with self.subTest(input=input_val):
+                with self.assertRaises(TypeError):
+                    get_domain(input_val)
 
     @patch('requests.head')
     def test_check_site_availability_success(self, mock_head):
@@ -202,12 +187,7 @@ class TestUrlValidator(TimedTestCase):
             mock_response.status_code = status_code
             mock_head.return_value = mock_response
             
-            start = time.time()
-            result = check_site_availability('http://example.com')
-            end = time.time()
-            
-            self.assertTrue(result)
-            print(f"  check_site_availability(status={status_code}): {(end-start):.6f} seconds")
+            self.assertTrue(check_site_availability('http://example.com'))
 
     @patch('requests.head')
     def test_check_site_availability_failure(self, mock_head):
@@ -218,12 +198,7 @@ class TestUrlValidator(TimedTestCase):
             mock_response.status_code = status_code
             mock_head.return_value = mock_response
             
-            start = time.time()
-            result = check_site_availability('http://example.com')
-            end = time.time()
-            
-            self.assertFalse(result)
-            print(f"  check_site_availability(status={status_code}): {(end-start):.6f} seconds")
+            self.assertFalse(check_site_availability('http://example.com'))
 
     @patch('requests.head')
     def test_check_site_availability_exceptions(self, mock_head):
@@ -235,31 +210,15 @@ class TestUrlValidator(TimedTestCase):
         for exception in exceptions:
             mock_head.side_effect = exception()
             
-            start = time.time()
-            result = check_site_availability('http://example.com')
-            end = time.time()
-            
-            self.assertFalse(result)
-            print(f"  check_site_availability(exception={exception.__name__}): {(end-start):.6f} seconds")
-
-
-def generate_timing_report():
-    """Run the tests and generate a timing report."""
-    print("\n" + "="*80)
-    print("VALNARA URL VALIDATOR TIMING REPORT")
-    print("="*80)
-    print(f"Report generated at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("-"*80)
+            self.assertFalse(check_site_availability('http://example.com'))
     
-    # Run tests
-    loader = unittest.TestLoader()
-    suite = loader.loadTestsFromTestCase(TestUrlValidator)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-    
-    print("\n" + "="*80)
-    print("END OF TIMING REPORT")
-    print("="*80)
-
+    def test_check_site_availability_invalid_input(self):
+        """Test check_site_availability with invalid inputs."""
+        invalid_inputs = [None, '', 123, {}, []]
+        
+        for input_val in invalid_inputs:
+            with self.subTest(input=input_val):
+                self.assertFalse(check_site_availability(input_val))
 
 if __name__ == '__main__':
-    generate_timing_report()
+    unittest.main()
