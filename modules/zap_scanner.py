@@ -329,7 +329,7 @@ def run_zap_scan(target, scan_types=None, spider_depth=5, use_auth=False, auth_i
         'url': target,
         'solution': 'This is a test vulnerability added to verify the results display is working.'
     })
-        results['summary']['Low'] = 1
+        results['summary']['Low'] += 1
         return {
             'scan_info': scan_info,
             'results': results

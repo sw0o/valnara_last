@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import os
 import json
 from datetime import datetime
+import time
 
 # Import the modules you've already completed
 from modules.url_validator import validate_url, check_site_availability, normalize_url
@@ -148,6 +149,10 @@ def start_scan(scan_id):
     scan_info['progress'] = 0
     update_scan_status(scan_id, 'running')
     
+    # Start timing
+    start_time = time.time()
+    print(f"[SCAN STARTED] Target: {scan_info['url']} - Type: {scan_info['scan_type']} - Depth: {scan_info['scan_depth']}")
+    
     try:
         # WordPress scan condition
         if scan_info.get('is_wordpress', False) or scan_info.get('scan_type') == 6:
@@ -161,6 +166,21 @@ def start_scan(scan_id):
                 scan_types=scan_types,
                 spider_depth=scan_info['scan_depth']
             )
+        
+        # End timing
+        end_time = time.time()
+        scan_duration = end_time - start_time
+        
+        # Print scan timing to terminal
+        print(f"\n==== SCAN COMPLETED ====")
+        print(f"Target: {scan_info['url']}")
+        print(f"Scan Type: {scan_info['scan_type']}")
+        print(f"Scan Depth: {scan_info['scan_depth']}")
+        print(f"Total Scan Time: {scan_duration:.2f} seconds")
+        print(f"========================\n")
+        
+        # Also print in CSV format for easy spreadsheet import
+        print(f"SCAN_RESULT,{scan_info['url']},{scan_info['scan_type']},{scan_info['scan_depth']},{scan_duration:.2f}")
         
         # Update to completed status
         scan_info['status'] = 'completed'
@@ -182,6 +202,21 @@ def start_scan(scan_id):
         
     except Exception as e:
         import traceback
+        
+        # End timing even for errors
+        end_time = time.time()
+        scan_duration = end_time - start_time
+        
+        print(f"\n==== SCAN FAILED ====")
+        print(f"Target: {scan_info['url']}")
+        print(f"Scan Type: {scan_info['scan_type']}")
+        print(f"Scan Depth: {scan_info['scan_depth']}")
+        print(f"Time Before Failure: {scan_duration:.2f} seconds")
+        print(f"Error: {str(e)}")
+        print(f"===================\n")
+        
+        print(f"SCAN_ERROR,{scan_info['url']},{scan_info['scan_type']},{scan_info['scan_depth']},{scan_duration:.2f},{str(e)}")
+        
         print(f"Scan failed with error: {str(e)}")
         print(traceback.format_exc())
         
