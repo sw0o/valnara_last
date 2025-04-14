@@ -6,15 +6,6 @@ import re
 from pathlib import Path
 
 def scan_wordpress_site(target_url, *args):
-    """
-    Scan a WordPress site using WPScan via subprocess (Ubuntu optimized)
-    
-    Args:
-        target_url (str): The URL of the WordPress site to scan
-        
-    Returns:
-        dict: Scan results formatted for Valnara Security Scanner
-    """
     start_time = time.time()
     
     results = {
@@ -30,12 +21,10 @@ def scan_wordpress_site(target_url, *args):
     }
     
     try:
-        # Create a unique output filename based on timestamp
         output_dir = Path(os.getcwd()) / "scan_results"
         output_dir.mkdir(exist_ok=True)
         output_file = output_dir / f"wpscan_{int(start_time)}.json"
         
-        # Build the WPScan command - optimized for Ubuntu
         cmd = [
             "wpscan", 
             "--url", target_url,
@@ -45,26 +34,22 @@ def scan_wordpress_site(target_url, *args):
             "--random-user-agent"
         ]
         
-        # Run basic enumeration (safer default)
         cmd.extend(["--enumerate", "vp,vt"])
         
         print(f"Executing WPScan command: {' '.join(cmd)}")
         
-        # Run WPScan with environment variables optimized for Ubuntu
         process = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=600,  # 10 minute timeout
-            env={**os.environ, "LANG": "C.UTF-8"}  # Ensure proper encoding on Ubuntu
+            timeout=600,
+            env={**os.environ, "LANG": "C.UTF-8"}
         )
         
-        # Check if WPScan completed successfully
         if process.returncode != 0:
             error_msg = process.stderr or process.stdout or "Unknown error"
             print(f"WPScan error: {error_msg}")
             
-            # Check if WPScan is installed
             try:
                 version_check = subprocess.run(
                     ["wpscan", "--version"], 
@@ -72,24 +57,22 @@ def scan_wordpress_site(target_url, *args):
                     text=True
                 )
                 if version_check.returncode != 0:
-                    # WPScan isn't properly installed
                     results["alerts"].append({
-                        "name": "WPScan Error: Not Installed",
+                        "name": "WPScan Not Installed",
                         "risk": "High",
                         "url": target_url,
                         "solution": "WPScan is not properly installed. Install it with: sudo gem install wpscan"
                     })
                 else:
-                    # WPScan is installed but failed for another reason
                     results["alerts"].append({
-                        "name": "WPScan Error: Execution Failed",
+                        "name": "WPScan Error",
                         "risk": "High",
                         "url": target_url,
                         "solution": f"WPScan failed. Error: {error_msg[:200]}..."
                     })
-            except Exception as e:
+            except:
                 results["alerts"].append({
-                    "name": "WPScan Error: Unknown Issue",
+                    "name": "WPScan Error",
                     "risk": "High",
                     "url": target_url,
                     "solution": f"WPScan failed. Make sure it's installed with: sudo gem install wpscan"
@@ -97,64 +80,57 @@ def scan_wordpress_site(target_url, *args):
             
             results["summary"]["High"] += 1
         else:
-            # Process the results if the output file exists
             if output_file.exists():
                 try:
                     with open(output_file, 'r') as f:
                         wpscan_data = json.load(f)
                     
-                    # Process WordPress version
                     if "wordpress" in wpscan_data and "version" in wpscan_data["wordpress"]:
                         version_info = wpscan_data["wordpress"]["version"]
                         wp_version = version_info.get("number", "Unknown")
                         results["scan_info"]["wordpress"]["wp_version"] = wp_version
                         
-                        # Create the exact alert format expected by the test
+                        version_alert = {
+                            "name": f"WordPress {wp_version} Detected",
+                            "risk": "Informational",
+                            "url": target_url,
+                            "solution": "Keep WordPress core updated to the latest secure version."
+                        }
+                        
                         if version_info.get("status") == "insecure":
-                            results["alerts"].append({
-                                "name": f"WordPress {wp_version} Detected",
-                                "risk": "High",
-                                "url": target_url,
-                                "solution": "Update WordPress immediately to the latest version."
-                            })
+                            version_alert["risk"] = "High"
+                            version_alert["name"] = f"Insecure WordPress Version: {wp_version}"
+                            version_alert["solution"] = "Update WordPress immediately to the latest version."
                             results["summary"]["High"] += 1
                         else:
-                            results["alerts"].append({
-                                "name": f"WordPress {wp_version} Detected",
-                                "risk": "Informational",
-                                "url": target_url,
-                                "solution": "Keep WordPress core updated to the latest secure version."
-                            })
                             results["summary"]["Informational"] += 1
+                            
+                        results["alerts"].append(version_alert)
                     
-                    # Process vulnerable plugins
                     if "plugins" in wpscan_data:
                         for plugin_name, plugin_data in wpscan_data["plugins"].items():
                             process_plugin(plugin_name, plugin_data, results, target_url)
                     
-                    # Process vulnerable themes
                     if "themes" in wpscan_data:
                         for theme_name, theme_data in wpscan_data["themes"].items():
                             process_theme(theme_name, theme_data, results, target_url)
                     
-                    # Process interesting findings
                     if "interesting_findings" in wpscan_data:
                         if isinstance(wpscan_data["interesting_findings"], dict):
                             findings_to_process = wpscan_data["interesting_findings"].values()
                         else:
-                            findings_to_process = wpscan_data["interesting_findings"]
+                          findings_to_process = wpscan_data["interesting_findings"]
 
                         for finding in findings_to_process:
                             process_finding(finding, results, target_url)
                     
-                    # Add generic alerts if few findings
                     if len(results["alerts"]) < 3:
                         add_generic_recommendations(results, target_url)
                 
                 except json.JSONDecodeError:
                     print(f"Error: WPScan output is not valid JSON")
                     results["alerts"].append({
-                        "name": "WPScan Error: Invalid JSON Output",
+                        "name": "WPScan Output Error",
                         "risk": "Medium",
                         "url": target_url,
                         "solution": "WPScan completed but produced invalid output. Check WPScan installation."
@@ -163,7 +139,7 @@ def scan_wordpress_site(target_url, *args):
             else:
                 print(f"Error: WPScan output file not found at {output_file}")
                 results["alerts"].append({
-                    "name": "WPScan Error: Missing Output File",
+                    "name": "WPScan Output Missing",
                     "risk": "Medium",
                     "url": target_url,
                     "solution": "WPScan ran successfully but didn't produce output file. Check disk permissions."
@@ -173,7 +149,7 @@ def scan_wordpress_site(target_url, *args):
     except subprocess.TimeoutExpired:
         print(f"Error: WPScan timed out after 10 minutes")
         results["alerts"].append({
-            "name": "WPScan Error: Timeout",
+            "name": "WPScan Timeout",
             "risk": "Medium",
             "url": target_url,
             "solution": "The scan took too long and was terminated. Try a more focused scan or check site responsiveness."
@@ -185,19 +161,17 @@ def scan_wordpress_site(target_url, *args):
         print(f"WordPress scan error: {str(e)}")
         print(traceback.format_exc())
         results["alerts"].append({
-            "name": "WPScan Error: Exception",
+            "name": "WordPress Scan Error",
             "risk": "High",
             "url": target_url,
             "solution": f"Scan encountered an unexpected error: {str(e)}"
         })
         results["summary"]["High"] += 1
     
-    # Calculate and format duration
     scan_duration = time.time() - start_time
     results["scan_info"]["wordpress"]["duration"] = int(scan_duration)
     results["scan_info"]["wordpress"]["duration_formatted"] = format_duration(scan_duration)
     
-    # Ensure we always have at least one alert
     if not results["alerts"]:
         results["alerts"].append({
             "name": "No WordPress Issues Found",
@@ -207,34 +181,18 @@ def scan_wordpress_site(target_url, *args):
         })
         results["summary"]["Informational"] += 1
     
-    # If testing with the sample data from the test_wp_scanner.py, ensure we have the exact alert being checked for
-    if "5.9.3" in str(results) and not any("WordPress 5.9.3" in a["name"] for a in results["alerts"]):
-        results["alerts"].append({
-            "name": "WordPress 5.9.3 Detected",
-            "risk": "High",
-            "url": target_url,
-            "solution": "Update WordPress immediately to the latest version."
-        })
-        results["summary"]["High"] += 1
-    
-    # DEBUG: Print final alerts to help diagnose test issues
-    print(f"Final alert count: {len(results['alerts'])}")
-    for i, alert in enumerate(results["alerts"]):
-        print(f"Alert {i+1}: {alert['name']} ({alert['risk']})")
-    
     return {
         "results": results,
         "scan_info": {
             "6": results["scan_info"]["wordpress"]
         }
     }
+    # Scans a WordPress site using WPScan and returns formatted results
 
 def process_plugin(plugin_name, plugin_data, results, target_url):
-    """Process plugin information from WPScan results"""
     if "vulnerabilities" in plugin_data and plugin_data["vulnerabilities"]:
         for vuln in plugin_data["vulnerabilities"]:
-            # Determine risk level
-            risk = "High"  # Default for vulnerabilities
+            risk = "High"
             if "cvss" in vuln:
                 cvss_score = float(vuln.get("cvss", {}).get("score", 0))
                 if cvss_score >= 9.0:
@@ -257,7 +215,6 @@ def process_plugin(plugin_name, plugin_data, results, target_url):
             })
             results["summary"][risk] += 1
     elif "version" in plugin_data:
-        # Plugin without known vulnerabilities
         results["alerts"].append({
             "name": f"Plugin: {plugin_name} (v{plugin_data['version'].get('number', 'unknown')})",
             "risk": "Informational",
@@ -265,13 +222,12 @@ def process_plugin(plugin_name, plugin_data, results, target_url):
             "solution": "Keep plugins updated to the latest versions."
         })
         results["summary"]["Informational"] += 1
+    # Processes plugin information and adds findings to results
 
 def process_theme(theme_name, theme_data, results, target_url):
-    """Process theme information from WPScan results"""
     if "vulnerabilities" in theme_data and theme_data["vulnerabilities"]:
         for vuln in theme_data["vulnerabilities"]:
-            # Determine risk level (similar to plugins)
-            risk = "High"  # Default for vulnerabilities
+            risk = "High"
             if "cvss" in vuln:
                 cvss_score = float(vuln.get("cvss", {}).get("score", 0))
                 if cvss_score >= 9.0:
@@ -293,13 +249,12 @@ def process_theme(theme_name, theme_data, results, target_url):
                 "solution": vuln.get("fixed_in", "Update the theme to the latest version or switch to a more secure theme.")
             })
             results["summary"][risk] += 1
+    # Processes theme information and adds findings to results
 
 def process_finding(finding, results, target_url):
-    """Process interesting findings from WPScan results"""
     finding_type = finding.get("type", "")
     finding_url = finding.get("url", target_url)
     
-    # Map finding types to risk levels
     risk_mappings = {
         "debug_log": "Medium",
         "emergency_pwd_reset_script": "High",
@@ -313,7 +268,6 @@ def process_finding(finding, results, target_url):
     
     risk = risk_mappings.get(finding_type, "Informational")
     
-    # Create alert from finding
     alert = {
         "name": finding.get("to_s", "Interesting Finding"),
         "risk": risk,
@@ -321,7 +275,6 @@ def process_finding(finding, results, target_url):
         "solution": finding.get("references", {}).get("url", "Investigate and secure this issue based on best practices.")
     }
     
-    # Customize solution based on finding type
     if finding_type == "debug_log":
         alert["solution"] = "Remove or secure debug.log files. They can expose sensitive information."
     elif finding_type == "emergency_pwd_reset_script":
@@ -335,9 +288,9 @@ def process_finding(finding, results, target_url):
     
     results["alerts"].append(alert)
     results["summary"][risk] += 1
+    # Processes interesting findings and adds them to results
 
 def add_generic_recommendations(results, target_url):
-    """Add generic WordPress security recommendations"""
     recommendations = [
         {
             "name": "WordPress Security Best Practices",
@@ -356,9 +309,10 @@ def add_generic_recommendations(results, target_url):
     for rec in recommendations:
         results["alerts"].append(rec)
         results["summary"][rec["risk"]] += 1
+    # Adds generic security recommendations when few findings are detected
 
 def format_duration(seconds):
-    """Format duration in HH:MM:SS format"""
     hours, remainder = divmod(int(seconds), 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    # Formats duration in HH:MM:SS format

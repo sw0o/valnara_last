@@ -5,16 +5,6 @@ from urllib.parse import urlparse
 from requests.exceptions import RequestException, ConnectionError, Timeout
 
 def validate_url(url):
-    """
-    Validate if the input string is a properly formated URL.
-    
-    Args:
-        url (str): The URL to validate
-        
-    Returns:
-        bool: True if URL is valed  False otherwise
-        
-    """
     if not url or not isinstance(url, str):
         return False
         
@@ -60,17 +50,9 @@ def validate_url(url):
         return False
         
     return True
+    # Validates if a string is a properly formatted URL
 
 def check_site_availability(url):
-    """
-    Check if the site is available by sending a request.
-    
-    Args:
-        url (str): The URL to check
-        
-    Returns:
-        bool: True if site is available, False otherwise
-    """
     if not url or not isinstance(url, str):
         return False
         
@@ -82,17 +64,9 @@ def check_site_availability(url):
         return response.status_code < 400
     except (ConnectionError, Timeout, RequestException):
         return False
+    # Checks if a site is available by sending a request
 
 def normalize_url(url):
-    """
-    Normalize the URL by adding scheme if missing and ensuring consistent format.
-    
-    Args:
-        url (str): The URL to normalize
-        
-    Returns:
-        str: Normalized URL
-    """
     if not url or not isinstance(url, str):
         raise TypeError("URL must be a non-empty string")
         
@@ -105,17 +79,9 @@ def normalize_url(url):
         normalized_url += f"?{parsed.query}"
     
     return normalized_url
+    # Normalizes a URL by adding scheme if missing
 
 def get_domain(url):
-    """
-    Extract the domain from a URL.
-    
-    Args:
-        url (str): The URL to extract domain from
-        
-    Returns:
-        str: Domain name
-    """
     if not url or not isinstance(url, str):
         raise TypeError("URL must be a non-empty string")
         
@@ -124,3 +90,4 @@ def get_domain(url):
     
     parsed = urlparse(url)
     return parsed.netloc
+    # Extracts the domain from a URL
