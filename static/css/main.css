@@ -1,12 +1,79 @@
 /* Main CSS for Valnara Security Scanner */
 
 :root {
-    --golden: #3b4797;
-    --olive: #1f1f1d;
-    --olive-light: #161604;
-    --olive-dark: #5A5A00;
-    --golden-light: rgb(93, 87, 71);
-    --bg-gradient: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(128,128,0,0.1) 100%);
+    /* Main palette colors */
+    --medium-slate-blue: #6660ff;
+    --periwinkle: #83baff;
+    --columbia-blue: #c9e6ff;
+    --rich-black: #050f16;
+    --celadon: #c9f0d7;
+    
+    /* Functional color assignments */
+    --primary: var(--medium-slate-blue);
+    --secondary: var(--periwinkle);
+    --background: var(--columbia-blue);
+    --dark: var(--rich-black);
+    --accent: var(--celadon);
+    
+    /* Legacy variable names (for compatibility) */
+    --golden: var(--medium-slate-blue);
+    --olive: var(--rich-black);
+    --olive-light: var(--periwinkle);
+    --olive-dark: var(--medium-slate-blue);
+    --golden-light: var(--celadon);
+    
+    /* Gradients */
+    --bg-gradient: linear-gradient(135deg, rgba(102,96,255,0.1) 0%, rgba(131,186,255,0.1) 100%);
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background-color: var(--dark);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: bold;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+}
+
+.card-header {
+    background-color: var(--dark);
+    color: white;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 3px solid var(--primary);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(102,96,255,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(131,186,255,0.3);
+}
+
+.progress-bar {
+    background: linear-gradient(45deg, var(--primary) 0%, var(--secondary) 100%);
+    background-size: 200% 200%;
+    animation: gradient-animation 2s ease infinite;
 }
 
 body {

@@ -102,6 +102,13 @@ function startScan(scanId) {
     startButton.disabled = true;
     startButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting scan...`;
     
+    // Update status badge immediately
+    const statusBadge = document.querySelector('h5.mt-3 .badge');
+    if (statusBadge) {
+        statusBadge.textContent = 'Running';
+        statusBadge.className = 'badge bg-primary pulse';
+    }
+    
     console.log(`Starting scan ${scanId}`);
     
     // Send start scan request
@@ -117,14 +124,7 @@ function startScan(scanId) {
         
         if (data.status === 'completed') {
             // Scan already completed, force redirect to results
-            console.log('Scan completed, redirecting to results');
-            // Force a complete page navigation
             window.location.href = data.redirect;
-            
-            // If for some reason the above doesn't work, try a harder redirect after a short delay
-            setTimeout(() => {
-                window.top.location.href = data.redirect;
-            }, 500);
         } else {
             // Just reload the page to show updated status
             window.location.reload();
@@ -135,6 +135,12 @@ function startScan(scanId) {
         alert('Error starting scan. Please try again.');
         startButton.disabled = false;
         startButton.innerHTML = originalButtonText;
+        
+        // Revert status badge if there was an error
+        if (statusBadge) {
+            statusBadge.textContent = 'Pending';
+            statusBadge.className = 'badge bg-secondary';
+        }
     });
 }
 

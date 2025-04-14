@@ -27,7 +27,7 @@ class ScanResult(db.Model):
         self.start_time = scan_info['start_time']
         self.end_time = scan_info.get('end_time')
         
-        # Store results as JSON if available
+    
         if 'results' in scan_info and scan_info['results']:
             self.results_data = json.dumps(scan_info['results'])
             
