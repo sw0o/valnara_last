@@ -10,15 +10,51 @@ def is_wordpress(url):
             'Accept': 'text/html'
         })
         
-        # Fastest possible checks
+        html = response.text.lower()
+        
+   
         quick_checks = [
-            '/wp-content/' in response.text.lower(),
-            '/wp-includes/' in response.text.lower(),
-            'wordpress' in response.text.lower(),
-            response.text.count('wp-') > 3
+            '/wp-content/' in html,
+            '/wp-includes/' in html,
+            'wordpress' in html,
+            html.count('wp-') > 3,
+            'wp-admin' in html,
+            'wp-login' in html
         ]
         
-        return any(quick_checks)
-    
+        if any(quick_checks):
+            return True
+            
+        medium_checks = [
+            'wpemoji' in html,
+            'woocommerce' in html,
+            'wp.customize' in html,
+            'class="wp-' in html,
+            'id="wp-' in html,
+            '/wp-json/' in html,
+            'plugins/elementor/' in html,
+            'plugins/woocommerce/' in html,
+            'plugins/contact-form-7/' in html
+        ]
+        
+        if any(medium_checks):
+            return True
+            
+        
+        patterns = [
+            r'_wpnonce=[a-zA-Z0-9]{10}',
+            r'admin-ajax\.php',
+            r'post-\d+',
+            r'page-id-\d+',
+            r'comment-\d+',
+            r'themes/[^/]+/assets'
+        ]
+        
+        for pattern in patterns:
+            if re.search(pattern, html):
+                return True
+        
+        return False
+        
     except:
         return False
