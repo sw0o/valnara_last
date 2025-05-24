@@ -19,21 +19,17 @@ def format_time(seconds):
     return str(timedelta(seconds=seconds)).split('.')[0]
 
 def ensure_url_in_context(target):
-    """Make sure the URL is in ZAP's context before scanning"""
     try:
-        # First try accessing the target site through ZAP's proxy
         zap_api_call('core', 'action', 'accessUrl', {'url': target})
         time.sleep(2)
         
-        # Run a quick spider to make sure it's in the tree
-        spider_result = zap_api_call('spider', 'action', 'scan', {'url': target, 'maxChildren': '5'})
+        spider_result = zap_api_call('spider', 'action', 'scan', {'url': target, 'maxChildren': '5`'})
         if 'scan' not in spider_result:
             print(f"Spider response: {spider_result}")
             return False
         
         scan_id = spider_result['scan']
-        # Wait for spider to finish
-        for _ in range(10):  # Wait max 10 seconds
+        for _ in range(10):  
             progress = zap_api_call('spider', 'view', 'status', {'scanId': scan_id})
             if int(progress.get('status', 0)) >= 100:
                 return True
@@ -49,7 +45,7 @@ def run_spider_scan(target, max_depth=5):
     
     ensure_url_in_context(target)
     zap_api_call('spider', 'action', 'setOptionMaxDepth', {'Integer': str(max_depth)})
-    scan_result = zap_api_call('spider', 'action', 'scan', {'url': target})
+    scan_result = zap_api_call('spider', 'action', 'scan', {'url': target}) # accessing the target site through ZAP's proxy
     
     if 'scan' not in scan_result:
         print(f"Unexpected ZAP API response: {scan_result}")
@@ -215,7 +211,7 @@ def get_scan_results(target):
 
 def run_zap_scan(target, scan_types=None, spider_depth=5, use_auth=False, auth_info=None):
     if scan_types is None:
-        scan_types = [1, 3, 4]  # Default to Spider, Active, and Passive scans
+        scan_types = [1, 3, 4]  
         
     scan_info = {}
     

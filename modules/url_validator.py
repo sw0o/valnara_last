@@ -64,7 +64,7 @@ def check_site_availability(url):
         return response.status_code < 400
     except (ConnectionError, Timeout, RequestException):
         return False
-    # Checks if a site is available by sending a request
+    # sending a request
 
 def normalize_url(url):
     if not url or not isinstance(url, str):
@@ -79,7 +79,7 @@ def normalize_url(url):
         normalized_url += f"?{parsed.query}"
     
     return normalized_url
-    # Normalizes a URL by adding scheme if missing
+    
 
 def get_domain(url):
     if not url or not isinstance(url, str):
@@ -90,4 +90,3 @@ def get_domain(url):
     
     parsed = urlparse(url)
     return parsed.netloc
-    # Extracts the domain from a URL
